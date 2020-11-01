@@ -1,9 +1,2 @@
-﻿  Engine.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(145,32): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(145,19): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(161,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(239,11): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(243,11): warning C4305: '-=': truncation from 'double' to 'float'
-  main.cpp
-  Generating Code...
+﻿  main.cpp
   Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Debug\Engine3D.exe

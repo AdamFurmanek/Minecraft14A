@@ -6,6 +6,6 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	Engine* engine = Engine::getInstance();
-	engine->init(argc, argv, HD, false);
+	engine->init(argc, argv, HD, true);
 	return 0;
 }

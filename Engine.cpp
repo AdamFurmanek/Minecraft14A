@@ -1,17 +1,13 @@
 #include "Engine.h"
-#include <stdlib.h>
-#include <GL/glut.h>
-#include <vector>
 
 Engine* Engine::engine = NULL;
+Map* Engine::map = new Map();
 
 float Engine::angle = 0.0;
 float Engine::lx = 0.0f, Engine::lz = -1.0f, Engine::ly = 0.0f;
-float Engine::x = 0.0f, Engine::z = 5.0f, Engine::y = 1.0f;
+float Engine::x = 5.0f, Engine::z = 5.0f, Engine::y = 4.0f;
 float Engine::deltaAngle = 0.0, Engine::deltaAngleY = 0.0, Engine::deltaMove = 0.0, Engine::deltaMoveSides = 0.0;
 float Engine::jump = 0;
-
-//int* Engine::map = new int[8][64][8];
 
 Engine::Engine()
 {
@@ -67,46 +63,106 @@ void Engine::init(int argc, char* argv[], Resolution res, bool fullscreen) {
 	glutKeyboardUpFunc(releaseKey);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
+	glEnable(GL_DEPTH_TEST);
 
 	glutTimerFunc(15, timer, 1);
 	glutMainLoop();
 }
 
-void drawSnowMan() {
+void drawCube(int x, int y, int z, int id) {
+	glBegin(GL_QUADS);
+	float r, g, b;
+	switch (id) {
+	case 1:
+		glColor3f(0.0f, 1.0f, 0.0f);     // Green
+		break;
+	case 2:
+		glColor3f(1.0f, 0.0f, 0.0f);     // Red
+		break;
+	}
 
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 
-	// Draw Body
-	glTranslatef(0.0f, 0.75f, 0.0f);
-	glutSolidSphere(0.75f, 20, 20);
+	// Bottom face (y = -1.0f)
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
 
-	// Draw Head
-	glTranslatef(0.0f, 1.0f, 0.0f);
-	glutSolidSphere(0.25f, 20, 20);
+	// Front face  (z = 1.0f)
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 
-	// Draw Eyes
-	glPushMatrix();
-	glColor3f(0.0f, 0.0f, 0.0f);
-	glTranslatef(0.05f, 0.10f, 0.18f);
-	glutSolidSphere(0.05f, 10, 10);
-	glTranslatef(-0.1f, 0.0f, 0.0f);
-	glutSolidSphere(0.05f, 10, 10);
-	glPopMatrix();
+	// Back face (z = -1.0f)
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 
-	// Draw Nose
-	glColor3f(1.0f, 0.5f, 0.5f);
-	glutSolidCone(0.08f, 0.5f, 10, 2);
+	// Left face (x = -1.0f)
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+
+	// Right face (x = 1.0f)
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+	glEnd();  // End of drawing color-cube
 }
 
 void Engine::display() {
 
 	if (deltaMoveSides) {
-		x += deltaMoveSides * -lz * 0.3f;
-		z += deltaMoveSides * lx * 0.3f;
+
+		float space = (deltaMoveSides >= 0) ? (0.3) : (-0.3);
+
+		float x1, x2, y1, z1, z2;
+		x1 = (int)(x + space + (deltaMoveSides * -lz * 0.3f));
+		x2 = (int)(x - space + (deltaMoveSides * -lz * 0.3f));
+		y1 = (int)(y - 1);
+		z1 = (int)(z);
+		if (lz <0 && map->get(x1, y1, z1) == 0 && map->get(x1, y1 - 1, z1) == 0 && map->get(x1, y1 + 1, z1) == 0)
+			x += deltaMoveSides * -lz * 0.3f;
+		else if(lz >0 && map->get(x2, y1 - 1, z1) == 0 && map->get(x2, y1 - 1, z1) == 0 && map->get(x2, y1 + 1, z1) == 0)
+			x += deltaMoveSides * -lz * 0.3f;
+		x1 = (int)(x);
+		z1 = (int)(z + space + (deltaMoveSides * lx * 0.3f));
+		z2 = (int)(z - space + (deltaMoveSides * lx * 0.3f));
+		if (lx>0 && map->get(x1, y1, z1) == 0 && map->get(x1, y1 - 1, z1) == 0 && map->get(x1, y1 + 1, z1) == 0)
+			z += deltaMoveSides * lx * 0.3f;
+		else if(lx<0 && map->get(x1, y1, z2) == 0 && map->get(x1, y1 - 1, z2) == 0 && map->get(x1, y1 + 1, z2) == 0)
+			z += deltaMoveSides * lx * 0.3f;
 	}
 	if (deltaMove) {
-		x += deltaMove * lx * 0.3f;
-		z += deltaMove * lz * 0.3f;
+
+		float space = (deltaMove >= 0) ? (0.3) : (-0.3);
+
+		float x1, x2, y1, z1, z2;
+		x1 = (int)(x + space + (deltaMove * lx * 0.3f));
+		x2 = (int)(x - space + (deltaMove * lx * 0.3f));
+		y1 = (int)(y - 1);
+		z1 = (int)(z);
+		if (lx > 0 && map->get(x1, y1, z1) == 0 && map->get(x1, y1 - 1, z1) == 0&& map->get(x1, y1 + 1, z1) == 0) {
+			x += deltaMove * lx * 0.3f;
+		}
+		else if (lx < 0 && map->get(x2, y1, z1) == 0 && map->get(x2, y1 - 1, z1) == 0 && map->get(x2, y1 + 1, z1) == 0) {
+			x += deltaMove * lx * 0.3f;
+		}
+		x1 = (int)(x);
+		z1 = (int)(z + space + (deltaMove * lz * 0.3f));
+		z2 = (int)(z - space + (deltaMove * lz * 0.3f));
+		if (lz > 0 && map->get(x1,y1,z1) == 0 && map->get(x1, y1-1, z1) == 0 && map->get(x1, y1 + 1, z1) == 0)
+			z += deltaMove * lz * 0.3f;
+		if( lz<0 && map->get(x1, y1, z2) == 0 && map->get(x1, y1 - 1, z2) == 0 && map->get(x1, y1 + 1, z2) == 0)
+			z += deltaMove * lz * 0.3f;
 	}
 
 
@@ -127,25 +183,18 @@ void Engine::display() {
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(x, y, z, x + lx, y + ly, z + lz, 0.0f, 1.0f, 0.0f);
+	cout << y << endl;
+	gluLookAt(x, y-0.5, z, x + lx, y + ly, z + lz, 0.0f, 1.0f, 0.0f);
 
-	// Draw ground
-	glColor3f(0.431f, 0.698f, 0.098f);
-	glBegin(GL_QUADS);
-	glVertex3f(-100.0f, 0.0f, -100.0f);
-	glVertex3f(-100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, -100.0f);
-	glEnd();
-
-	// Draw 36 SnowMen
-	for (int i = -3; i < 3; i++)
-		for (int j = -3; j < 3; j++) {
-			glPushMatrix();
-			glTranslatef(i * 10.0, 0, j * 10.0);
-			drawSnowMan();
-			glPopMatrix();
+	for (int x = 0;x < map->getX(); x++) {
+		for (int y = 0;y < map->getY();y++) {
+			for (int z = 0;z < map->getZ();z++) {
+				if (map->get(x, y, z) != 0) {
+					drawCube(x, y, z, map->get(x, y, z));
+				}
+			}
 		}
+	}
 
 	glutSwapBuffers();
 
@@ -236,11 +285,27 @@ void Engine::timer(int parameter)
 	//skok w gore
 	if (jump > 0) {
 		jump -= 0.1f;
-		y += 0.1;
+		float x1, x2, y1, z1, z2;
+		x1 = (int)(x + 0.3);
+		x2 = (int)(x - 0.3);
+		y1 = (int)(y );
+		z1 = (int)(z + 0.3);
+		z2 = (int)(z - 0.3);
+		if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z2) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z1) == 0)
+			y += 0.1;
 	}
 	//spadanie
-	else if (y > 1) {
-		y -= 0.1;
+	else if (y > 2) {
+		float x1, x2, y1, z1, z2;
+		x1 = (int)(x + 0.3);
+		x2 = (int)(x - 0.3);
+		y1 = (int)(y - 1);
+		z1 = (int)(z + 0.3);
+		z2 = (int)(z - 0.3);
+		if (map->get(x1, y1 - 2, z1) == 0 && map->get(x2, y1 - 2, z2) == 0 && map->get(x1, y1 - 2, z2) == 0 && map->get(x2, y1 - 2, z1) == 0)
+			y -= 0.1;
+		else
+			jump = 0;
 	}
 	//jakiœ problem mam z floatami i jump schodzi poni¿ej 0 :)
 	if (jump < 0)

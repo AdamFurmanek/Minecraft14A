@@ -3,6 +3,9 @@
 
 #include "Enums.h"
 #include <iostream>
+#include <stdlib.h>
+#include <GL/glut.h>
+#include "Map.h"
 
 using namespace std;
 
@@ -36,6 +39,7 @@ private:
 	static void releaseKey(unsigned char key, int x, int y);
 	static void mouseMove(int x, int y);
 	static void timer(int parameter);
+	static Map* map;
 
 public:
 
