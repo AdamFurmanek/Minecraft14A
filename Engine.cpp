@@ -65,6 +65,27 @@ void Engine::init(int argc, char* argv[], Resolution res, bool fullscreen) {
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glEnable(GL_DEPTH_TEST);
 
+
+
+	//ŒWIAT£O
+// Lighting set up
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
+	//glEnable(GL_NORMALIZE);
+	//// Set lighting intensity and color
+	//GLfloat qaAmbientLight[] = { 0.2, 0.2, 0.2, 1.0 };
+	//GLfloat qaDiffuseLight[] = { 0.8, 0.8, 0.8, 1.0 };
+	//GLfloat qaSpecularLight[] = { 1.0, 1.0, 1.0, 1.0 };
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+
+	// Set the light position
+	//GLfloat qaLightPosition[] = { 0.5, 0.5, 0.5, 1.0 };
+	//glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
+
+
 	glutTimerFunc(15, timer, 1);
 	glutMainLoop();
 }
@@ -81,12 +102,15 @@ void drawCube(int x, int y, int z, int id) {
 		break;
 	}
 
+	//glNormal3f(x + 1.0f, y + 2.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 
+
 	// Bottom face (y = -1.0f)
+	glNormal3f(x + 1.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
@@ -196,6 +220,10 @@ void Engine::display() {
 		}
 	}
 
+	glTranslatef(20.0f, 4.0f, 20.0f);
+
+	glutSolidTeapot(1);
+
 	glutSwapBuffers();
 
 }
@@ -215,11 +243,13 @@ void Engine::reshape(int w, int h) {
 	// Reset Matrix
 	glLoadIdentity();
 
+	//glFrustum(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+
 	// Set the viewport to be the entire window
 	glViewport(0, 0, w, h);
-
+	//gluPerspective(45, w/h, 1.5, 100);
 	// Set the correct perspective.
-	gluPerspective(45, ratio, 1, 100);
+	gluPerspective(45, ratio, 0.01, 100);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -233,18 +263,18 @@ void Engine::specialKeyboard(int key, int x, int y) {
 void Engine::pressKey(unsigned char key, int xx, int yy) {
 
 	switch (key) {
-	case 'a': deltaMoveSides = -0.5f; break;
-	case 'd': deltaMoveSides = 0.5f; break;
-	case 'w': deltaMove = 0.5f; break;
-	case 's': deltaMove = -0.5f; break;
+	case 'a': deltaMoveSides = -0.4f; break;
+	case 'd': deltaMoveSides = 0.4f; break;
+	case 'w': deltaMove = 0.4f; break;
+	case 's': deltaMove = -0.4f; break;
 	case 'q':
-		if (deltaMove==0.5f) {
-			deltaMove += 1.0f;
+		if (deltaMove==0.4f) {
+			deltaMove += 0.6f;
 		}
 		break;
 	case ' ':
 		if(jump==0)
-			jump = 1.5f;
+			jump = 2.0f;
 		break;
 	case 27:
 		exit(0);
@@ -256,9 +286,21 @@ void Engine::releaseKey(unsigned char key, int x, int y) {
 
 	switch (key) {
 	case 'a':
-	case 'd': deltaMoveSides = 0.0f;break;
+		if (deltaMoveSides < 0)
+			deltaMoveSides = 0.0f;
+		break;
+	case 'd':
+		if (deltaMoveSides > 0)
+			deltaMoveSides = 0.0f;
+		break;
 	case 'w':
-	case 's': deltaMove = 0;break;
+		if (deltaMove > 0)
+			deltaMove = 0.0f;
+		break;
+	case 's':
+		if (deltaMove < 0)
+			deltaMove = 0.0f;
+		break;
 	}
 }
 
@@ -282,6 +324,7 @@ void Engine::mouseMove(int x, int y) {
 
 void Engine::timer(int parameter)
 {
+	cout << y;
 	//skok w gore
 	if (jump > 0) {
 		jump -= 0.1f;
@@ -291,8 +334,16 @@ void Engine::timer(int parameter)
 		y1 = (int)(y );
 		z1 = (int)(z + 0.3);
 		z2 = (int)(z - 0.3);
-		if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z2) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z1) == 0)
-			y += 0.1;
+		if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z2) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z1) == 0) {
+			if(jump>0.5)
+				y += 0.1;
+			if (jump == 0.5)
+				y += 0.05;
+			if (jump == 0)
+				y -= 0.05;
+
+		}
+
 	}
 	//spadanie
 	else if (y > 2) {
@@ -303,13 +354,10 @@ void Engine::timer(int parameter)
 		z1 = (int)(z + 0.3);
 		z2 = (int)(z - 0.3);
 		if (map->get(x1, y1 - 2, z1) == 0 && map->get(x2, y1 - 2, z2) == 0 && map->get(x1, y1 - 2, z2) == 0 && map->get(x2, y1 - 2, z1) == 0)
-			y -= 0.1;
+			y -= 0.12;
 		else
 			jump = 0;
 	}
-	//jakiœ problem mam z floatami i jump schodzi poni¿ej 0 :)
-	if (jump < 0)
-		jump = 0;
 	glutTimerFunc(10, timer, 1);
 }
 

@@ -1,14 +1,21 @@
 #include "Map.h"
 
 #include <iostream>
+#include <stdlib.h>
 
 using namespace std;
 
  Map::Map(){
+
+	 srand(NULL);
+
 	 for (int x = 0;x < 64;x++) {
 		 for (int y = 0;y < 64;y++) {
 			 for (int z = 0;z < 64;z++) {
-				 map[x][y][z] = 0;
+				 //if(rand()%600==1)
+					//map[x][y][z] = 2;
+				 //else
+					 map[x][y][z] = 0;
 			 }
 		 }
 	 }
