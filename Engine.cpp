@@ -3,11 +3,13 @@
 Engine* Engine::engine = NULL;
 Map* Engine::map = new Map();
 
-float Engine::angle = 0.0;
-float Engine::lx = 0.0f, Engine::lz = -1.0f, Engine::ly = 0.0f;
-float Engine::x = 5.0f, Engine::z = 5.0f, Engine::y = 4.0f;
-float Engine::deltaAngle = 0.0, Engine::deltaAngleY = 0.0, Engine::deltaMove = 0.0, Engine::deltaMoveSides = 0.0;
-float Engine::jump = 0;
+float Engine::angleXZ = 0.0f;
+float Engine::lx = -10.0f, Engine::lz = -1.0f, Engine::ly = -1.0f;
+float Engine::x = 5.0f, Engine::z = 5.0f, Engine::y = 60.0f;
+float Engine::deltaAngleXZ = 0.0f, Engine::deltaAngleY = 0.0f, Engine::deltaMoveStraight = 0.0f, Engine::deltaMoveSides = 0.0f;
+int Engine::jump = 0;
+float Engine::fallingSpeed = 0.1f;
+int Engine::viewField = 45;
 
 Engine::Engine()
 {
@@ -24,218 +26,144 @@ Engine* Engine::getInstance() {
 	return Engine::engine;
 }
 
-void Engine::init(int argc, char* argv[], Resolution res, bool fullscreen) {
+void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
+
+	// Inicjalizacja biblioteki GLUT.
 	glutInit(&argc, argv);
+	// Inicjalizacja podwójnego bufora ramki i system kolorów RGB.
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	int x, y;
-	switch (res) {
-	case FULLHD:
-		x = 1920;
-		y = 1080;
-		break;
-	case HD:
-		x = 1280;
-		y = 720;
-		break;
-	case SVGA:
-		x = 800;
-		y = 600;
-		break;
-	case VGA:
-	default:
-		x = 640;
-		y = 480;
-		break;
-	}
-	glutInitWindowSize(x, y);
-	glutCreateWindow(argv[0]);
+	// Rozmiary g³ównego okna programu.
+	glutInitWindowSize(w, h);
+	// Utworzenie g³ównego okna programu.
+	glutCreateWindow("Minecraft 14A");
+	// Pe³na ekran okna programu.
 	if (fullscreen)
 		glutFullScreen();
-	glutDisplayFunc(display);
-	glutIdleFunc(display);
-	glutReshapeFunc(reshape);
-	glutSpecialFunc(specialKeyboard);
-	glutMouseFunc(mouse);
-	glutPassiveMotionFunc(mouseMove);
-
+	// Do³¹czenie funkcji generuj¹cej scenê 3D.
+	glutDisplayFunc(Display);
+	// Do³¹czenie funkcji wywo³ywanej przy zmianie rozmiaru okna
+	glutReshapeFunc(Reshape);
+	// Do³¹czenie funkcji obs³ugi klawiatury.
+	glutKeyboardFunc(Keyboard);
+	// Do³¹czenie funkcji obs³ugi snaków specjalnych klawiatury.
+	glutSpecialFunc(SpecialKeyboard);
+	// Do³¹czenie funkcji obs³ugi myszy.
+	glutMouseFunc(Mouse);
+	// Do³¹czenie funkcji obs³ugi ruchu myszy.
+	glutPassiveMotionFunc(MouseMove);
+	// Do³¹czenie funkcji obs³ugi naciœniêcia klawiszy
+	glutKeyboardFunc(PressKey);
+	// Do³¹czenie funkcji obs³ugi zwolnienia klawiszy
+	glutKeyboardUpFunc(ReleaseKey);
+	// Funkcja blokuje wykonywanie powtarzaj¹cyh wciœnieñ.
 	glutIgnoreKeyRepeat(1);
-	glutKeyboardFunc(pressKey);
-	glutKeyboardUpFunc(releaseKey);
-
+	// Ukrycie kursora.
 	glutSetCursor(GLUT_CURSOR_NONE);
+	// W³¹czenie testu bufora g³êbokoœci.
 	glEnable(GL_DEPTH_TEST);
 
-
-
-	//ŒWIAT£O
-// Lighting set up
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 	//glEnable(GL_LIGHTING);
 	//glEnable(GL_LIGHT0);
-	//glEnable(GL_NORMALIZE);
-	//// Set lighting intensity and color
-	//GLfloat qaAmbientLight[] = { 0.2, 0.2, 0.2, 1.0 };
-	//GLfloat qaDiffuseLight[] = { 0.8, 0.8, 0.8, 1.0 };
-	//GLfloat qaSpecularLight[] = { 1.0, 1.0, 1.0, 1.0 };
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
 
-	// Set the light position
-	//GLfloat qaLightPosition[] = { 0.5, 0.5, 0.5, 1.0 };
-	//glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
-
-
-	glutTimerFunc(15, timer, 1);
+	// Wywo³anie funkcji timera.
+	glutTimerFunc(15, Timer, 1);
+	// Wprowadzenie programu do obs³ugi pêtli komunikatów.
 	glutMainLoop();
 }
 
-void drawCube(int x, int y, int z, int id) {
+void DrawCube(int x, int y, int z, int id) {
+
+
+
+	// Pocz¹tek definicji czworok¹ta.
 	glBegin(GL_QUADS);
-	float r, g, b;
+	// Ustawienie koloru na podstawie id.
 	switch (id) {
 	case 1:
-		glColor3f(0.0f, 1.0f, 0.0f);     // Green
+		// Zielony
+		glColor3f(0.0f, 1.0f, 0.0f);
 		break;
 	case 2:
-		glColor3f(1.0f, 0.0f, 0.0f);     // Red
+		// Czerwony
+		glColor3f(1.0f, 0.0f, 0.0f);
 		break;
 	}
 
-	//glNormal3f(x + 1.0f, y + 2.0f, z + 0.0f);
+	// Góra
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 
-
-	// Bottom face (y = -1.0f)
-	glNormal3f(x + 1.0f, y + 0.0f, z + 0.0f);
+	// Dó³
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
 
-	// Front face  (z = 1.0f)
+	// Przód
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 
-	// Back face (z = -1.0f)
+	// Ty³
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 
-	// Left face (x = -1.0f)
+	// Lewo
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 
-	// Right face (x = 1.0f)
+	// Prawo
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-	glEnd();  // End of drawing color-cube
+
+	// Koniec definicji prymitywu.
+	glEnd();
 }
 
-void Engine::display() {
+void Engine::Display() {
 
-	if (deltaMoveSides) {
-
-		float space = (deltaMoveSides >= 0) ? (0.3) : (-0.3);
-
-		float x1, x2, y1, z1, z2;
-		x1 = (int)(x + space + (deltaMoveSides * -lz * 0.3f));
-		x2 = (int)(x - space + (deltaMoveSides * -lz * 0.3f));
-		y1 = (int)(y - 1);
-		z1 = (int)(z);
-		if (lz <0 && map->get(x1, y1, z1) == 0 && map->get(x1, y1 - 1, z1) == 0 && map->get(x1, y1 + 1, z1) == 0)
-			x += deltaMoveSides * -lz * 0.3f;
-		else if(lz >0 && map->get(x2, y1 - 1, z1) == 0 && map->get(x2, y1 - 1, z1) == 0 && map->get(x2, y1 + 1, z1) == 0)
-			x += deltaMoveSides * -lz * 0.3f;
-		x1 = (int)(x);
-		z1 = (int)(z + space + (deltaMoveSides * lx * 0.3f));
-		z2 = (int)(z - space + (deltaMoveSides * lx * 0.3f));
-		if (lx>0 && map->get(x1, y1, z1) == 0 && map->get(x1, y1 - 1, z1) == 0 && map->get(x1, y1 + 1, z1) == 0)
-			z += deltaMoveSides * lx * 0.3f;
-		else if(lx<0 && map->get(x1, y1, z2) == 0 && map->get(x1, y1 - 1, z2) == 0 && map->get(x1, y1 + 1, z2) == 0)
-			z += deltaMoveSides * lx * 0.3f;
-	}
-	if (deltaMove) {
-
-		float space = (deltaMove >= 0) ? (0.3) : (-0.3);
-
-		float x1, x2, y1, z1, z2;
-		x1 = (int)(x + space + (deltaMove * lx * 0.3f));
-		x2 = (int)(x - space + (deltaMove * lx * 0.3f));
-		y1 = (int)(y - 1);
-		z1 = (int)(z);
-		if (lx > 0 && map->get(x1, y1, z1) == 0 && map->get(x1, y1 - 1, z1) == 0&& map->get(x1, y1 + 1, z1) == 0) {
-			x += deltaMove * lx * 0.3f;
-		}
-		else if (lx < 0 && map->get(x2, y1, z1) == 0 && map->get(x2, y1 - 1, z1) == 0 && map->get(x2, y1 + 1, z1) == 0) {
-			x += deltaMove * lx * 0.3f;
-		}
-		x1 = (int)(x);
-		z1 = (int)(z + space + (deltaMove * lz * 0.3f));
-		z2 = (int)(z - space + (deltaMove * lz * 0.3f));
-		if (lz > 0 && map->get(x1,y1,z1) == 0 && map->get(x1, y1-1, z1) == 0 && map->get(x1, y1 + 1, z1) == 0)
-			z += deltaMove * lz * 0.3f;
-		if( lz<0 && map->get(x1, y1, z2) == 0 && map->get(x1, y1 - 1, z2) == 0 && map->get(x1, y1 + 1, z2) == 0)
-			z += deltaMove * lz * 0.3f;
-	}
-
-
-	//cout << "x: " << x << "   " << "z: " << z << endl;
-	//cout << "lx: " << lx << "   " << "lz: " << lz << endl;
-
-	if (deltaAngle) {
-		angle += deltaAngle*2;
-		lx = sin(angle);
-		lz = -cos(angle);
-	}
-
-	// Clear Color and Depth Buffers
-
+	// Czyszczenie bufora koloru i bufora g³êbi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Kolor t³a.
 	glClearColor(0.431f, 0.698f, 0.98f, 1.0);
-
-	// Reset transformations
+	// Wybór macierzy modelowania.
+	glMatrixMode(GL_MODELVIEW);
+	// Macierz jednostkowa.
 	glLoadIdentity();
-	// Set the camera
-	cout << y << endl;
-	gluLookAt(x, y-0.5, z, x + lx, y + ly, z + lz, 0.0f, 1.0f, 0.0f);
+	// Ustawienie kamery.
+	gluLookAt(x, y + 2.5, z, x + lx, y + ly + 2.5, z + lz, 0.0f, 1.0f, 0.0f);
 
-	for (int x = 0;x < map->getX(); x++) {
-		for (int y = 0;y < map->getY();y++) {
-			for (int z = 0;z < map->getZ();z++) {
-				if (map->get(x, y, z) != 0) {
-					drawCube(x, y, z, map->get(x, y, z));
+	for (int x1 = 0;x1 < map->getX(); x1++) {
+		for (int y1 = 0;y1 < map->getY();y1++) {
+			for (int z1 = 0;z1 < map->getZ();z1++) {
+				if (map->get(x1, y1, z1) != 0) {
+					DrawCube(x1, y1, z1, map->get(x1, y1, z1));
 				}
 			}
 		}
 	}
 
-	glTranslatef(20.0f, 4.0f, 20.0f);
+	//GLfloat light_position[] = { 0.0, 15.0, 0.0, 1 };
+	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-	glutSolidTeapot(1);
 
+	// Skierowanie poleceñ do wykonania.
+	glFlush();
+	// Zamiana buforów koloru.
 	glutSwapBuffers();
 
 }
 
-void Engine::reshape(int w, int h) {
-
-	// Prevent a divide by zero, when window is too short
-	// (you cant make a window of zero width).
-	if (h == 0)
-		h = 1;
-
-	float ratio = w * 1.0 / h;
+void Engine::Reshape(int w, int h) {
 
 	// Use the Projection Matrix
 	glMatrixMode(GL_PROJECTION);
@@ -243,38 +171,40 @@ void Engine::reshape(int w, int h) {
 	// Reset Matrix
 	glLoadIdentity();
 
-	//glFrustum(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-
 	// Set the viewport to be the entire window
 	glViewport(0, 0, w, h);
-	//gluPerspective(45, w/h, 1.5, 100);
+
 	// Set the correct perspective.
-	gluPerspective(45, ratio, 0.01, 100);
+	gluPerspective(viewField, (w * 1.0 / h), 0.01, 100);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
 
 }
 
-void Engine::specialKeyboard(int key, int x, int y) {
+void Engine::SpecialKeyboard(int key, int x, int y) {
 
 }
 
-void Engine::pressKey(unsigned char key, int xx, int yy) {
+void Engine::Keyboard(unsigned char key, int x, int y) {
+
+}
+
+void Engine::PressKey(unsigned char key, int xx, int yy) {
 
 	switch (key) {
-	case 'a': deltaMoveSides = -0.4f; break;
-	case 'd': deltaMoveSides = 0.4f; break;
-	case 'w': deltaMove = 0.4f; break;
-	case 's': deltaMove = -0.4f; break;
+	case 'a': deltaMoveSides = -0.12f; break;
+	case 'd': deltaMoveSides = 0.12f; break;
+	case 'w': deltaMoveStraight = 0.12f; break;
+	case 's': deltaMoveStraight = -0.12f; break;
 	case 'q':
-		if (deltaMove==0.4f) {
-			deltaMove += 0.6f;
+		if (deltaMoveStraight== 0.12f) {
+			deltaMoveStraight += 0.07f;
 		}
 		break;
 	case ' ':
 		if(jump==0)
-			jump = 2.0f;
+			jump = 20;
 		break;
 	case 27:
 		exit(0);
@@ -282,7 +212,7 @@ void Engine::pressKey(unsigned char key, int xx, int yy) {
 	}
 }
 
-void Engine::releaseKey(unsigned char key, int x, int y) {
+void Engine::ReleaseKey(unsigned char key, int x, int y) {
 
 	switch (key) {
 	case 'a':
@@ -294,75 +224,156 @@ void Engine::releaseKey(unsigned char key, int x, int y) {
 			deltaMoveSides = 0.0f;
 		break;
 	case 'w':
-		if (deltaMove > 0)
-			deltaMove = 0.0f;
+		if (deltaMoveStraight > 0)
+			deltaMoveStraight = 0.0f;
 		break;
 	case 's':
-		if (deltaMove < 0)
-			deltaMove = 0.0f;
+		if (deltaMoveStraight < 0)
+			deltaMoveStraight = 0.0f;
 		break;
 	}
 }
 
-void Engine::mouse(int button, int state, int x, int y) {
+void Engine::Mouse(int button, int state, int x, int y) {
 
 }
 
-void Engine::mouseMove(int x, int y) {
+void Engine::MouseMove(int x, int y) {
 
-		
+		// Ustawienie kursor z powrotem na œrodek.
 		glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
-		// update deltaAngle
-		deltaAngle = (x-(glutGet(GLUT_WINDOW_WIDTH) / 2)) * 0.001f;
+		// Obliczenie ruchu myszki i przypisanie do deltaAngleXZ i deltaAngleY.
+		deltaAngleXZ = (x - (glutGet(GLUT_WINDOW_WIDTH) / 2)) * 0.001f;
 		deltaAngleY = (y - (glutGet(GLUT_WINDOW_HEIGHT) / 2)) * 0.001f;
 
-		// update camera's direction
-		lx = sin(angle + deltaAngle);
-		lz = -cos(angle + deltaAngle);
+		// Aktualizacja wektora kamery.
+		lx = sin(angleXZ + deltaAngleXZ);
+		lz = -cos(angleXZ + deltaAngleXZ);
 		ly = ly - deltaAngleY;
+
 }
 
-void Engine::timer(int parameter)
+void Engine::Timer(int parameter)
 {
-	cout << y;
-	//skok w gore
-	if (jump > 0) {
-		jump -= 0.1f;
-		float x1, x2, y1, z1, z2;
-		x1 = (int)(x + 0.3);
-		x2 = (int)(x - 0.3);
-		y1 = (int)(y );
-		z1 = (int)(z + 0.3);
-		z2 = (int)(z - 0.3);
-		if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z2) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z1) == 0) {
-			if(jump>0.5)
-				y += 0.1;
-			if (jump == 0.5)
-				y += 0.05;
-			if (jump == 0)
-				y -= 0.05;
-
+	// Jeœli wykonywany jest skok.
+	if (jump > 1) {
+		// Potencjalna zmiana wysokoœci y.
+		float deltaY;
+		// Zmiana wysokoœci jest dyktowana tym, w którym momencie lotu jest gracz.
+		switch (jump) {
+		case 20: case 19: case 18: case 17: case 16:
+			deltaY = 0.15f;
+			break;
+		case 15: case 14: case 13:
+			deltaY = 0.14f;
+			break;
+		case 12: case 11: case 10:
+			deltaY = 0.13f;
+			break;
+		case 9: case 8:
+			deltaY = 0.11f;
+			break;
+		case 7:
+			deltaY = 0.09f;
+			break;
+		case 6:
+			deltaY = 0.07f;
+			break;
+		case 5:
+			deltaY = 0.05f;
+			break;
+		case 4:
+			deltaY = 0.02f;
+			break;
+		case 3: case 2:
+			deltaY = 0.00f;
+			break;
 		}
 
+		// Sprawdzenie kolizji cia³a na wysokoœci g³owy z potencjalnie now¹ wartoœci¹ y.
+		if (!Collision(x, y + 2.7f + deltaY, z))
+			// Przypisanie nowej wartoœci y.
+			y += deltaY;
+
+		// Zmniejszenie licznika d³ugoœci skoku.
+		jump -= 1;
 	}
-	//spadanie
-	else if (y > 2) {
-		float x1, x2, y1, z1, z2;
-		x1 = (int)(x + 0.3);
-		x2 = (int)(x - 0.3);
-		y1 = (int)(y - 1);
-		z1 = (int)(z + 0.3);
-		z2 = (int)(z - 0.3);
-		if (map->get(x1, y1 - 2, z1) == 0 && map->get(x2, y1 - 2, z2) == 0 && map->get(x1, y1 - 2, z2) == 0 && map->get(x2, y1 - 2, z1) == 0)
-			y -= 0.12;
-		else
+	// Grawitacja.
+	else if (y > 0) {
+		
+		// Obliczenie potencjalnie nowej wartoœci y.
+		float newY = y - fallingSpeed;
+		// Sprawdzenie kolizji cia³a na wysokoœci butów z potencjalnie now¹ wartoœci¹ y.
+		if (!Collision(x, newY, z)) {
+			// Przypisanie nowej wartoœci y.
+			y = newY;
+			// Zwiêkszenie prêdkoœci spadania.
+			fallingSpeed += 0.006f;
+		}
+		else {
+			// Wyrównanie wysokoœci y do liczby ca³kowitej.
+			y = (int)(y);
+			// Zakoñczenie skoku. Pozwala wykonaæ nowy.
 			jump = 0;
+			// Zresetowanie prêdkoœci spadania do podstawowej.
+			fallingSpeed = 0.1f;
+		}
 	}
-	glutTimerFunc(10, timer, 1);
+
+	// Jeœli wykonano ruch w przód/ty³.
+	if (deltaMoveStraight) {
+		// Obliczenie potencjalnie nowej wartoœci x.
+		float newX = x + (deltaMoveStraight * lx);
+		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
+		if (!Collision(newX, y, z) && !Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
+			// Przypisanie nowej wartoœci do x.
+			x = newX;
+		// Obliczenie potencjalnie nowej wartoœci z.
+		float newZ = z + (deltaMoveStraight * lz);
+		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
+		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
+			// Przypisanie nowej wartoœci z.
+			z = newZ;
+	}
+	// Jeœli wykonano ruch na bok.
+	if (deltaMoveSides) {
+		// Obliczenie potencjalnie nowej wartoœci x.
+		float newX = x + (deltaMoveSides * -lz);
+		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
+		if (!Collision(newX, y, z) && !Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
+			// Przypisanie nowej wartoœci do x.
+			x = newX;
+		// Obliczenie potencjalnie nowej wartoœci z.
+		float newZ = z + (deltaMoveSides * lx);
+		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
+		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
+			// Przypisanie nowej wartoœci z.
+			z = newZ;
+	}
+
+	// Obliczenie wektora kamery.
+	if (deltaAngleXZ) {
+		angleXZ += deltaAngleXZ * 2;
+		lx = sin(angleXZ);
+		lz = -cos(angleXZ);
+	}
+
+	// Wywo³ania Timera za 10 milisekund.
+	glutTimerFunc(10, Timer, 1);
+	// Render.
+	glutPostRedisplay();
 }
 
-void Engine::Exception(string Error) {
-	/* Tymczasowa obs³uga b³êdów: wypisanie w konsoli. */
-	cout << "Error";
-	exit(0);
+bool Engine::Collision(float x, float y, float z) {
+	int x1, x2, y1, z1, z2;
+	float space = 0.4;
+	x1 = (int)(x + space);
+	x2 = (int)(x - space);
+	y1 = (int)(y);
+	z1 = (int)(z + space);
+	z2 = (int)(z - space);
+	if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z1) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z2) == 0)
+		return false;
+	else
+		return true;
 }
