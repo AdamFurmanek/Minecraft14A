@@ -19,8 +19,12 @@ private:
 	static float angleXZ;
 	// Wektor reprezentuj¹cy kierunek kamery.
 	static float lx, lz, ly;
-	// Pozycja œrodka gracza (y to wysokoœæ butów)
+	// Pozycja œrodka gracza (y to wysokoœæ butów).
 	static float x, y, z;
+	// Pozycja œledzonego bloku.
+	static float followedX, followedY, followedZ;
+	// Œciana œledzonego bloku.
+	static int followedWall;
 	// Zmiany k¹ta XZ oraz Y.
 	static float deltaAngleXZ, deltaAngleY;
 	// Zmiany przemieszczenia prosto-ty³ i na boki.
@@ -43,7 +47,11 @@ private:
 	static void Timer(int parameter);
 	// Metoda sprawdza czy cia³o gracza na jego podanej wysokoœci nie styka siê krawêdziami z blokiem.
 	static bool Collision(float x, float y, float z);
+	static void Following();
+	static void Wall(float x1, float y1, float z1);
 	static Map* map;
+
+	static void DrawCubeBorder();
 
 public:
 

@@ -1,5 +1,50 @@
 ﻿  Engine.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(149,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(321,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(375,19): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(80,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(81,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(82,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(83,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(178,26): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(178,13): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(185,26): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(185,13): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(192,16): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(192,13): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(199,16): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(199,13): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(206,26): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(206,23): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(213,26): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(213,23): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(227,59): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(227,42): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(227,25): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(229,62): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(229,44): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(229,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(260,49): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(283,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(372,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(372,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(372,17): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(397,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(397,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(397,17): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(400,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(400,29): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(400,18): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(490,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(547,19): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(560,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(567,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(568,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(569,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(570,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(571,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(572,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(573,24): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(573,20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(573,16): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(592,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(593,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Engine.cpp(594,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Debug\Engine3D.exe

@@ -150,6 +150,12 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Map.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine3D.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Users\adamf\Downloads\wall.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\nupengl.core.redist.0.1.0.1\build\native\nupengl.core.redist.targets" Condition="Exists('packages\nupengl.core.redist.0.1.0.1\build\native\nupengl.core.redist.targets')" />

@@ -9,15 +9,15 @@ using namespace std;
 
 	 srand(NULL);
 
-	 for (int x = 0;x < 64;x++) {
-		 for (int y = 0;y < 64;y++) {
-			 for (int z = 0;z < 64;z++) {
+	 for (int x = 0;x < getX();x++) {
+		 for (int y = 0;y < getY();y++) {
+			 for (int z = 0;z < getZ();z++) {
 					 map[x][y][z] = 0;
 			 }
 		 }
 	 }
-	 for (int x = 0;x < 64;x++) {
-		 for (int z = 0;z < 64;z++) {
+	 for (int x = 0;x < getX();x++) {
+		 for (int z = 0;z < getZ();z++) {
 			 map[x][0][z] = 1;
 		 }
 	 }

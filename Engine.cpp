@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <math.h>
 
 Engine* Engine::engine = NULL;
 Map* Engine::map = new Map();
@@ -9,7 +10,11 @@ float Engine::x = 5.0f, Engine::z = 5.0f, Engine::y = 60.0f;
 float Engine::deltaAngleXZ = 0.0f, Engine::deltaAngleY = 0.0f, Engine::deltaMoveStraight = 0.0f, Engine::deltaMoveSides = 0.0f;
 int Engine::jump = 0;
 float Engine::fallingSpeed = 0.1f;
-int Engine::viewField = 45;
+int Engine::viewField = 60;
+float Engine::followedX = NULL;
+float Engine::followedY = NULL;
+float Engine::followedZ = NULL;
+int Engine::followedWall = NULL;
 
 Engine::Engine()
 {
@@ -51,6 +56,7 @@ void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	glutMouseFunc(Mouse);
 	// Do³¹czenie funkcji obs³ugi ruchu myszy.
 	glutPassiveMotionFunc(MouseMove);
+	glutMotionFunc(MouseMove);
 	// Do³¹czenie funkcji obs³ugi naciœniêcia klawiszy
 	glutKeyboardFunc(PressKey);
 	// Do³¹czenie funkcji obs³ugi zwolnienia klawiszy
@@ -59,11 +65,7 @@ void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	glutIgnoreKeyRepeat(1);
 	// Ukrycie kursora.
 	glutSetCursor(GLUT_CURSOR_NONE);
-	// W³¹czenie testu bufora g³êbokoœci.
-	glEnable(GL_DEPTH_TEST);
 
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
 
 	// Wywo³anie funkcji timera.
 	glutTimerFunc(15, Timer, 1);
@@ -71,9 +73,23 @@ void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	glutMainLoop();
 }
 
+void DrawCursor() {
+	GLfloat diffuse[4] = { 0, 0, 0, 0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glBegin(GL_LINES);
+	glVertex3f(-0.002, 0, -0.1);
+	glVertex3f(0.002, 0, -0.1);
+	glVertex3f(0, -0.002, -0.1);
+	glVertex3f(0, 0.002, -0.1);
+	glEnd();
+}
+
 void DrawCube(int x, int y, int z, int id) {
 
-
+	GLfloat diffuse[4] = { 0, 0, 0, 0 };
+	GLfloat ambient[4] = { 0, 0, 0, 0 };
+	GLfloat specular[4] = { 0, 0, 0, 0 };
+	GLfloat shininess = 0;
 
 	// Pocz¹tek definicji czworok¹ta.
 	glBegin(GL_QUADS);
@@ -81,56 +97,142 @@ void DrawCube(int x, int y, int z, int id) {
 	switch (id) {
 	case 1:
 		// Zielony
-		glColor3f(0.0f, 1.0f, 0.0f);
+		diffuse[1] = 1;
 		break;
 	case 2:
 		// Czerwony
-		glColor3f(1.0f, 0.0f, 0.0f);
+		diffuse[0] = 1;
 		break;
 	}
 
+	// w³aœciwoœci materia³u
+
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+	/*
+	// Góra
+	glNormal3f(x + 1, y + 1, z - 1);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+	glNormal3f(x - 1, y + 1, z - 1);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glNormal3f(x + - 1, y + 1, z + 1);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glNormal3f(x + 1, y + 1, z + 1);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+
+	// Dó³
+	glNormal3f(x + 1, y - 1, z + 1);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+	glNormal3f(x - 1, y - 1, z + 1);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+	glNormal3f(x - 1, y - 1, z - 1);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glNormal3f(x + 1, y - 1, z - 1);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+
+	// Przód
+	glNormal3f(x + 1, y + 1, z + 1);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+	glNormal3f(x - 1, y + 1, z + 1);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glNormal3f(x - 1, y - 1, z + 1);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+	glNormal3f(x + 1, y - 1, z + 1);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+
+	// Ty³
+	glNormal3f(x + 1, y - 1, z - 1);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+	glNormal3f(x - 1, y - 1, z - 1);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glNormal3f(x - 1, y + 1, z - 1);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glNormal3f(x + 1, y + 1, z - 1);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+
+	// Lewo
+	glNormal3f(x - 1, y + 1, z + 1);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glNormal3f(x - 1, y + 1, z - 1);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glNormal3f(x - 1, y - 1, z - 1);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glNormal3f(x - 1, y - 1, z + 1);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+
+	// Prawo
+	glNormal3f(x + 1, y + 1, z - 1);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+	glNormal3f(x + 1, y + 1, z + 1);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+	glNormal3f(x + 1, y - 1, z + 1);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+	glNormal3f(x + 1, y - 1, z - 1);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+	*/
+
+
+	glNormal3f(x, y + 2.0f, z);
 	// Góra
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 
+	glNormal3f(x, y - 1.0f, z);
 	// Dó³
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
 
+	glNormal3f(x, y, z + 2.0f);
 	// Przód
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 
+	glNormal3f(x, y, z - 1.0f);
 	// Ty³
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 
+	glNormal3f(x - 1.0f, y, z);
 	// Lewo
 	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
 	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
 
+	glNormal3f(x + 2.0f, y, z);
 	// Prawo
 	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
 	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-
+	
 	// Koniec definicji prymitywu.
 	glEnd();
 }
 
+void Engine::DrawCubeBorder() {
+	GLfloat diffuse[4] = { 0, 0, 0, 0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glTranslatef(followedX + 0.5, followedY + 0.5, followedZ + 0.5);
+	glutWireCube(1);
+	glTranslatef(-followedX - 0.5, -followedY - 0.5, -followedZ - 0.5);
+
+}
+
 void Engine::Display() {
 
+	glLineWidth(2);
 	// Czyszczenie bufora koloru i bufora g³êbi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Kolor t³a.
@@ -139,8 +241,40 @@ void Engine::Display() {
 	glMatrixMode(GL_MODELVIEW);
 	// Macierz jednostkowa.
 	glLoadIdentity();
+
+	DrawCursor();
+
 	// Ustawienie kamery.
 	gluLookAt(x, y + 2.5, z, x + lx, y + ly + 2.5, z + lz, 0.0f, 1.0f, 0.0f);
+
+	DrawCubeBorder();
+	// W³¹czenie testu bufora g³êbokoœci.
+	glEnable(GL_DEPTH_TEST);
+	// w³¹czenie oœwietlenia
+	glEnable(GL_LIGHTING);
+	// w³¹czenie œwiat³a GL_LIGHT0 z parametrami domyœlnymi
+	glEnable(GL_LIGHT0);
+	glEnable(GL_NORMALIZE);
+
+	GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 0.0 };
+	GLfloat light_diffuse[] = { 0.7, 0.7, 0.7, 0.0 };
+	GLfloat light_specular[] = { 0, 0, 0, 0.0 };
+	GLfloat light_position[] = { 64.0, 64.0, 64.0, 0.0 };
+	GLfloat spot_direction[] = { -1.0, -1.0, 0.0 };
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
+
+	//cout << "Gracz: " << x << "   " << y << "   " << z << "   ";
+	//glGetLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	//cout << "Kamera: " << light_position[0] << "   " << light_position[1] << "   " << light_position[2] << "   Kierunek: ";
+	//glGetLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
+	//cout << spot_direction[0] << "   " << spot_direction[1] << "   " << spot_direction[2] << "   " << endl;
+
+
 
 	for (int x1 = 0;x1 < map->getX(); x1++) {
 		for (int y1 = 0;y1 < map->getY();y1++) {
@@ -151,10 +285,6 @@ void Engine::Display() {
 			}
 		}
 	}
-
-	//GLfloat light_position[] = { 0.0, 15.0, 0.0, 1 };
-	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
 
 	// Skierowanie poleceñ do wykonania.
 	glFlush();
@@ -235,7 +365,43 @@ void Engine::ReleaseKey(unsigned char key, int x, int y) {
 }
 
 void Engine::Mouse(int button, int state, int x, int y) {
+	if(state== GLUT_DOWN)
+	switch(button) {
+		case GLUT_LEFT_BUTTON:
+			if (followedX != NULL)
+				map->set(0, followedX, followedY, followedZ);
+		break;
+		case GLUT_RIGHT_BUTTON:
+			if (followedWall != NULL) {
+				switch (followedWall) {
+				case 0:
+					followedX += 1;
+					break;
+				case 1:
+					followedX -= 1;
+					break;
+				case 2:
+					followedY += 1;
+					break;
+				case 3:
+					followedY -= 1;
+					break;
+				case 4:
+					followedZ += 1;
+					break;
+				case 5:
+					followedZ -= 1;
+					break;
 
+				}
+				map->set(2, followedX, followedY, followedZ);
+				// Jeœli dochodzi do kolizji, usuñ postawiony blok.
+				if (Collision(Engine::x, Engine::y, Engine::z) || Collision(Engine::x, Engine::y + 1, Engine::z) || Collision(Engine::x, Engine::y + 2, Engine::z)) {
+					map->set(0, followedX, followedY, followedZ);
+				}
+			}
+			break;
+	}
 }
 
 void Engine::MouseMove(int x, int y) {
@@ -249,7 +415,16 @@ void Engine::MouseMove(int x, int y) {
 		// Aktualizacja wektora kamery.
 		lx = sin(angleXZ + deltaAngleXZ);
 		lz = -cos(angleXZ + deltaAngleXZ);
+		if (deltaAngleY > 0)
+			deltaAngleY += ly * ly / 98;
+		else if (deltaAngleY < 0)
+			deltaAngleY -= ly * ly / 98;
 		ly = ly - deltaAngleY;
+		if (ly > 7)
+			ly = 7;
+		if (ly < -7)
+			ly = -7;
+		
 
 }
 
@@ -334,6 +509,7 @@ void Engine::Timer(int parameter)
 		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
 			// Przypisanie nowej wartoœci z.
 			z = newZ;
+
 	}
 	// Jeœli wykonano ruch na bok.
 	if (deltaMoveSides) {
@@ -358,6 +534,8 @@ void Engine::Timer(int parameter)
 		lz = -cos(angleXZ);
 	}
 
+	Following();
+
 	// Wywo³ania Timera za 10 milisekund.
 	glutTimerFunc(10, Timer, 1);
 	// Render.
@@ -376,4 +554,63 @@ bool Engine::Collision(float x, float y, float z) {
 		return false;
 	else
 		return true;
+}
+
+void Engine::Following() {
+	float x1 = x, y1 = y + 2.5, z1 = z;
+	float x2 = x, y2 = y + 2, z2 = z;
+	float lx1 = lx;
+	float lz1 = lz;
+
+	float ly1 = ly;
+	for (int i = 0;i < 500;i++) {
+		x1 += lx1 * 0.01;
+		z1 += lz1 * 0.01;
+		y1 += ly1 * 0.01;
+		x2 = (int)(x1);
+		y2 = (int)(y1);
+		z2 = (int)(z1);
+		if (map->get(x2, y2, z2) != 0) {
+			//cout << x << "   " << y << "   " << z << endl;
+			//cout << x2 << "   " << y2 << "   " << z2 << endl;
+			followedX = x2;
+			followedY = y2;
+			followedZ = z2;
+			Wall(x1,y1,z1);
+			return;
+		}
+	}
+
+	followedX = NULL;
+	followedY = NULL;
+	followedZ = NULL;
+	followedWall = NULL;
+	//cout << " Koniec petli: " << x1 << "   " << y1 << "   " << z1 << endl;
+}
+
+void Engine::Wall(float x1, float y1, float z1) {
+	x1 = x1 - (int)x1 - 0.5;
+	y1 = y1 - (int)y1 - 0.5;
+	z1 = z1 - (int)z1 - 0.5;
+
+	if (abs(x1)>abs(y1)&& abs(x1) > abs(z1)) {
+		if (x1 >= 0)
+			followedWall = 0;
+		else if (x1 < 0)
+			followedWall = 1;
+	}
+	else if (abs(y1) > abs(x1) && abs(y1) > abs(z1)) {
+		if (y1 >= 0)
+			followedWall = 2;
+		else if (y1 < 0)
+			followedWall = 3;
+	}
+	else if (abs(z1) > abs(x1) && abs(z1) > abs(y1)) {
+		if (z1 >= 0)
+			followedWall = 4;
+		else if (z1 < 0)
+			followedWall = 5;
+	}
+	cout << followedWall << endl;
+
 }
