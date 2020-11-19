@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+
 #ifndef Engine_h
 #define Engine_h
 

@@ -1,5 +1,6 @@
-#include "Engine.h"
+Ôªø#include "Engine.h"
 #include <math.h>
+#include "Targa.h"
 #include <GLFW/glfw3.h>
 
 Engine* Engine::engine = NULL;
@@ -19,38 +20,40 @@ int Engine::followedWall = NULL;
 bool Engine::flashlight = false;
 float sunPosition = 0, sunTimer = 0;
 GLfloat skyColor[] = { 0.0f, 0.6f, 1.0f };
-GLuint texture;
+GLuint TexID[14];
+int handID = 1, handMax = 13;
 
 const float cube_vert[] = {
 1.0f, 1.0f, 0.0f,
 0.0f, 1.0f, 0.0f,
-0.0f, 1.0f, 1.0f,
 1.0f, 1.0f, 1.0f,
+0.0f, 1.0f, 1.0f,
 
 1.0f, 0.0f, 1.0f,
 0.0f, 0.0f, 1.0f,
-0.0f, 0.0f, 0.0f,
-1.0f, 0.0f, 0.0f,
-
-1.0f, 1.0f, 1.0f,
-0.0f, 1.0f, 1.0f,
-0.0f, 0.0f, 1.0f,
-1.0f, 0.0f, 1.0f,
-
 1.0f, 0.0f, 0.0f,
 0.0f, 0.0f, 0.0f,
-0.0f, 1.0f, 0.0f,
-1.0f, 1.0f, 0.0f,
 
 0.0f, 1.0f, 1.0f,
+0.0f, 0.0f, 1.0f,
+1.0f, 1.0f, 1.0f,
+1.0f, 0.0f, 1.0f,
+
+1.0f, 0.0f, 0.0f,
+0.0f, 0.0f, 0.0f,
+1.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f,
+
 0.0f, 1.0f, 0.0f,
 0.0f, 0.0f, 0.0f,
+0.0f, 1.0f, 1.0f,
 0.0f, 0.0f, 1.0f,
 
 1.0f, 1.0f, 0.0f,
 1.0f, 1.0f, 1.0f,
-1.0f, 0.0f, 1.0f,
-1.0f, 0.0f, 0.0f
+1.0f, 0.0f, 0.0f,
+1.0f, 0.0f, 1.0f
+
 };
 
 const float cube_norm[] = {
@@ -86,87 +89,31 @@ const float cube_norm[] = {
 };
 
 const unsigned char cube_ind[] = {
-0, 1, 2, // strona 1
-2, 3, 0,
+0, 1, 2,// strona 1
+1, 3, 2,
 4, 5, 6, // strona 2
-6, 7, 4,
+5, 7, 6,
 8, 9, 10, // strona 3
-10, 11, 8,
+9, 11, 10,
 12, 13, 14, // strona 4
-14, 15, 12,
+13, 15, 14,
 16, 17, 18, // strona 5
-18, 19, 16,
+17, 19, 18,
 20, 21, 22, // strona 6
-22, 23, 20,
+21, 23, 22,
 };
 
-void DrawBox() {
-
-	// W≥πczenie tabel i zdefiniowanie buforÛw:
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, 0, cube_norm);
-	//glEnableClientState(GL_COLOR_ARRAY);
-	//glColorPointer(3, GL_FLOAT, 0, cube_cols);
-	// Narysowanie obiektu:
-	glDrawElements(GL_TRIANGLES, sizeof(cube_ind),
-		GL_UNSIGNED_BYTE, cube_ind);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-}
-
-GLuint LoadTexture(const char* filename)
-{
-	GLuint texture;
-	int width, height;
-	unsigned char* data;
-
-	FILE* file;
-	file = fopen(filename, "rb");
-
-	if (file == NULL) {
-		cout << "NIE MA TEXTURY";
-		return 0;
-	}
-	width = 64;
-	height = 64;
-	data = (unsigned char*)malloc(width * height * 3);
-	//int size = fseek(file,);
-	fread(data, width * height * 3, 1, file);
-	fclose(file);
-
-	for (int i = 0; i < width * height; ++i)
-	{
-		int index = i * 3;
-		unsigned char B, R;
-		B = data[index];
-		R = data[index + 2];
-
-		data[index] = R;
-		data[index + 2] = B;
-	}
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
-	free(data);
-
-	return texture;
-}
+const float cube_texc[] = {
+	0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f,
+	1.0f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 1.0f,
+	1.0f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 1.0f,
+	0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f,
+	1.0f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 1.0f,
+	0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f
+};
 
 Engine::Engine()
 {
-	texture = LoadTexture("Textures\\texture.bmp");
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(texture, 0, GL_DEPTH_COMPONENT, 64, 64, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 
 }
 
@@ -184,41 +131,41 @@ void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
 
 	// Inicjalizacja biblioteki GLUT.
 	glutInit(&argc, argv);
-	// Inicjalizacja podwÛjnego bufora ramki i system kolorÛw RGB.
+	// Inicjalizacja podw√≥jnego bufora ramki i system kolor√≥w RGB.
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	// Rozmiary g≥Ûwnego okna programu.
+	// Rozmiary g≈Ç√≥wnego okna programu.
 	glutInitWindowSize(w, h);
-	// Utworzenie g≥Ûwnego okna programu.
+	// Utworzenie g≈Ç√≥wnego okna programu.
 	glutCreateWindow("Minecraft 14A");
-	// Pe≥na ekran okna programu.
+	// Pe≈Çna ekran okna programu.
 	if (fullscreen)
 		glutFullScreen();
-	// Do≥πczenie funkcji generujπcej scenÍ 3D.
+	// Do≈ÇƒÖczenie funkcji generujƒÖcej scenƒô 3D.
 	glutDisplayFunc(Display);
-	// Do≥πczenie funkcji wywo≥ywanej przy zmianie rozmiaru okna
+	// Do≈ÇƒÖczenie funkcji wywo≈Çywanej przy zmianie rozmiaru okna
 	glutReshapeFunc(Reshape);
-	// Do≥πczenie funkcji obs≥ugi klawiatury.
+	// Do≈ÇƒÖczenie funkcji obs≈Çugi klawiatury.
 	glutKeyboardFunc(Keyboard);
-	// Do≥πczenie funkcji obs≥ugi snakÛw specjalnych klawiatury.
+	// Do≈ÇƒÖczenie funkcji obs≈Çugi snak√≥w specjalnych klawiatury.
 	glutSpecialFunc(SpecialKeyboard);
-	// Do≥πczenie funkcji obs≥ugi myszy.
+	// Do≈ÇƒÖczenie funkcji obs≈Çugi myszy.
 	glutMouseFunc(Mouse);
-	// Do≥πczenie funkcji obs≥ugi ruchu myszy.
+	// Do≈ÇƒÖczenie funkcji obs≈Çugi ruchu myszy.
 	glutPassiveMotionFunc(MouseMove);
 	glutMotionFunc(MouseMove);
-	// Do≥πczenie funkcji obs≥ugi naciúniÍcia klawiszy
+	// Do≈ÇƒÖczenie funkcji obs≈Çugi naci≈õniƒôcia klawiszy
 	glutKeyboardFunc(PressKey);
-	// Do≥πczenie funkcji obs≥ugi zwolnienia klawiszy
+	// Do≈ÇƒÖczenie funkcji obs≈Çugi zwolnienia klawiszy
 	glutKeyboardUpFunc(ReleaseKey);
-	// Funkcja blokuje wykonywanie powtarzajπcyh wciúnieÒ.
+	// Funkcja blokuje wykonywanie powtarzajƒÖcyh wci≈õnie≈Ñ.
 	glutIgnoreKeyRepeat(1);
 	// Ukrycie kursora.
 	glutSetCursor(GLUT_CURSOR_NONE);
-	// GruboúÊ rysowania linii.
+	// Grubo≈õƒá rysowania linii.
 	glLineWidth(2);
-	// W≥πczenie testu bufora g≥Íbokoúci.
+	// W≈ÇƒÖczenie testu bufora g≈Çƒôboko≈õci.
 	glEnable(GL_DEPTH_TEST);
-	// w≥πczenie oúwietlenia
+	// w≈ÇƒÖczenie o≈õwietlenia
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT2);
 
@@ -227,47 +174,94 @@ void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	GLfloat diffuse1[] = { 1.0, 0.9, 0.7, 1.0 };
 	GLfloat specular1[] = { 0, 0, 0, 1.0 };
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient1);
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, ambient1);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse1);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specular1);
 
-	// OgÛlna jasnoúÊ (wartoúÊ <1 - przypomina latarkÍ)
 	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.7);
-	// Wygaszanie úwiat≥a (liniowo)
-	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05);
-	// Wygaszanie úwiat≥a (kwadratowo)
+	// Wygaszanie ≈õwiat≈Ça (liniowo)
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.01);
+	// Wygaszanie ≈õwiat≈Ça (kwadratowo)
 	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0);
 
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 20.0);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 35);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 10.0);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
 
-	GLfloat ambient2[] = { 0.5, 0.5, 0.5, 1.0 };
-	GLfloat diffuse2[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat specular2[] = { 0, 0, 0, 1.0 };
+	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, specular2);
-
-	// OgÛlna jasnoúÊ (wartoúÊ <1 - przypomina latarkÍ)
-	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.1);
-	// Wygaszanie úwiat≥a (liniowo)
-	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
-
-	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0);
-	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 180);
-
-
+	// W≈ÇƒÖczenie tabel i zdefiniowanie bufor√≥w:
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glNormalPointer(GL_FLOAT, 0, cube_norm);
 
 	glEnable(GL_TEXTURE_2D);
+
+	// Wygenerowanie trzech identyfikator√≥w dla tekstur:
+	glGenTextures(14, TexID);
+	// Aktywacja trzech tekstur i ¬≥adowanie ich z plik√≥w TGA:
+	glBindTexture(GL_TEXTURE_2D, TexID[0]);
+	LoadTGAMipmap(_strdup("nic"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[1]);
+	LoadTGAMipmap(_strdup("Textures//bedrock.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[2]);
+	LoadTGAMipmap(_strdup("Textures//stone.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[3]);
+	LoadTGAMipmap(_strdup("Textures//dirt.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[4]);
+	LoadTGAMipmap(_strdup("Textures//grass.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[5]);
+	LoadTGAMipmap(_strdup("Textures//sand.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[6]);
+	LoadTGAMipmap(_strdup("Textures//sandstone.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[7]);
+	LoadTGAMipmap(_strdup("Textures//tree.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[8]);
+	LoadTGAMipmap(_strdup("Textures//leaves.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[9]);
+	LoadTGAMipmap(_strdup("Textures//obsidian.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[10]);
+	LoadTGAMipmap(_strdup("Textures//smooth_stone.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[11]);
+	LoadTGAMipmap(_strdup("Textures//stone_bricks.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[12]);
+	LoadTGAMipmap(_strdup("Textures//purple_plate.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, TexID[13]);
+	LoadTGAMipmap(_strdup("Textures//red_plate.tga"));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+	// Przygotowanie sze≈ìcianu:
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	// Tabela z punktami:
+	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
+	// Tabela ze wsp√≥¬≥rz√™dnymi tekstur (2 wsp√≥¬≥rz√™dne):
+	glTexCoordPointer(2, GL_FLOAT, 0, cube_texc);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Face culling.
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 
-	// Wywo≥anie funkcji timera.
+	// Wywo≈Çanie funkcji timera.
 	glutTimerFunc(15, Timer, 1);
-	// Wprowadzenie programu do obs≥ugi pÍtli komunikatÛw.
+	// Wprowadzenie programu do obs≈Çugi pƒôtli komunikat√≥w.
 	glutMainLoop();
 }
 
@@ -282,145 +276,6 @@ void DrawCursor() {
 	glEnd();
 }
 
-void DrawCube(float x, float y, float z, int id) {
-
-	GLfloat diffuse[4] = { 0, 0, 0, 0 };
-	GLfloat ambient[4] = { 0.5, 0.5, 0.5, 0 };
-	GLfloat specular[4] = { 0.5, 0.5, 0.5, 0 };
-	GLfloat shininess = 0.5;
-
-	// Ustawienie koloru na podstawie id.
-	switch (id) {
-	case 1:
-		// Zielony
-		diffuse[1] = 0.7;
-		break;
-	case 2:
-		// Czerwony
-		diffuse[0] = 0.7;
-		break;
-	}
-
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-	
-
-
-	/*
-	//Poczπtek definicji czworokπta.
-	glBegin(GL_QUADS);
-	glNormal3f(x, y + 2.0f, z);
-	// GÛra
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-
-	glNormal3f(x, y - 1.0f, z);
-	// DÛ≥
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-
-	glNormal3f(x, y, z + 2.0f);
-	// PrzÛd
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-
-	glNormal3f(x, y, z - 1.0f);
-	// Ty≥
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-
-	glNormal3f(x - 1.0f, y, z);
-	// Lewo
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-
-	glNormal3f(x + 2.0f, y, z);
-	// Prawo
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-
-	// Koniec definicji prymitywu.
-	glEnd();
-	*/
-
-	/*
-	// GÛra
-	glNormal3f(x + 1, y + 1, z - 1);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-	glNormal3f(x - 1, y + 1, z - 1);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glNormal3f(x + - 1, y + 1, z + 1);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glNormal3f(x + 1, y + 1, z + 1);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-
-	// DÛ≥
-	glNormal3f(x + 1, y - 1, z + 1);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-	glNormal3f(x - 1, y - 1, z + 1);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-	glNormal3f(x - 1, y - 1, z - 1);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glNormal3f(x + 1, y - 1, z - 1);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-
-	// PrzÛd
-	glNormal3f(x + 1, y + 1, z + 1);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-	glNormal3f(x - 1, y + 1, z + 1);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glNormal3f(x - 1, y - 1, z + 1);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-	glNormal3f(x + 1, y - 1, z + 1);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-
-	// Ty≥
-	glNormal3f(x + 1, y - 1, z - 1);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-	glNormal3f(x - 1, y - 1, z - 1);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glNormal3f(x - 1, y + 1, z - 1);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glNormal3f(x + 1, y + 1, z - 1);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-
-	// Lewo
-	glNormal3f(x - 1, y + 1, z + 1);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glNormal3f(x - 1, y + 1, z - 1);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glNormal3f(x - 1, y - 1, z - 1);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glNormal3f(x - 1, y - 1, z + 1);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-
-	// Prawo
-	glNormal3f(x + 1, y + 1, z - 1);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-	glNormal3f(x + 1, y + 1, z + 1);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-	glNormal3f(x + 1, y - 1, z + 1);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-	glNormal3f(x + 1, y - 1, z - 1);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-	*/
-
-}
-
 void Engine::DrawCubeBorder() {
 	GLfloat diffuse[4] = { 0, 0, 0, 0 };
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
@@ -432,12 +287,12 @@ void Engine::DrawCubeBorder() {
 
 void Engine::Display() {
 
-	// Czyszczenie bufora koloru i bufora g≥Íbi.
+	// Czyszczenie bufora koloru i bufora g≈Çƒôbi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// Kolor t≥a.
+	// Kolor t≈Ça.
 	glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0);
 
-	// WybÛr macierzy modelowania.
+	// Wyb√≥r macierzy modelowania.
 	glMatrixMode(GL_MODELVIEW);
 	// Macierz jednostkowa.
 	glLoadIdentity();
@@ -447,76 +302,46 @@ void Engine::Display() {
 	// Ustawienie kamery.
 	gluLookAt(x, y + 2.5, z, x + lx, y + ly + 2.5, z + lz, 0.0f, 0.9f, 0.0f);
 
-
 	GLfloat position1[] = { x, y + 2.5, z, 1.0 };
 	GLfloat direction1[] = { lx, ly, lz };
 	glLightfv(GL_LIGHT1, GL_POSITION, position1);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, direction1);
 
-
-	glPushMatrix();
-		glTranslatef(0, 4, 16);
-		glRotatef(sunPosition, 1, 0, 0);
-
-		GLfloat position2[] = { map->getX() / 2, map->getY() , 0, 0.0 };
-		GLfloat direction2[] = { 0, -1, 0 };
-		glLightfv(GL_LIGHT2, GL_POSITION, position2);
-		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direction2);
-
 		glPushMatrix();
-			glTranslatef(map->getX() / 2, map->getY() , 0);
+		glTranslatef(0, 0, z);
+			glRotatef(sunPosition, 1, 0, 0);
+			GLfloat position2[] = { x, 40 , 0, 0.0 };
+			GLfloat direction2[] = { 0, -1, 0 };
+			glLightfv(GL_LIGHT2, GL_POSITION, position2);
+			glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direction2);
+			glTranslatef(x, 40, 0);
 			glutSolidSphere(1.0, 4, 4);
 		glPopMatrix();
-	glPopMatrix();
-
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(texture, 0, GL_DEPTH_COMPONENT, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, &texture);
-
-
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(20.0f, 3.0f, 20.0f);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(20.0f, 3.0f, 21.0f);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(20.0f, 2.0f, 21.0f);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(20.0f, 2.0f, 20.0f);
-	glEnd();
 
 	GLfloat diffuse[4] = { 1, 1, 1, 0 };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 	for (int x1 = 0;x1 < map->getX(); x1++) {
 		for (int y1 = 0;y1 < map->getY();y1++) {
 			for (int z1 = 0;z1 < map->getZ();z1++) {
-
-				if (map->get(x1, y1, z1) != 0) {
-					// Ustawienie koloru na podstawie id.
-					switch ((int)map->get(x1, y1, z1)) {
-					case 1:
-						// Zielony
-						glColor3f(0, 255, 0);
-						break;
-					case 2:
-						// Czerwony
-						glColor3f(255, 0, 0);
-						break;
-					}
+				int id = map->get(x1, y1, z1);
+				if (id != 0) {
+					
 					glPushMatrix();
 					glTranslatef(x1, y1, z1);
-					DrawBox();
+					glBindTexture(GL_TEXTURE_2D, TexID[id]);
+					glDrawElements(GL_TRIANGLES, sizeof(cube_ind), GL_UNSIGNED_BYTE, cube_ind);
 					glPopMatrix();
 				}
 			}
 		}
 	}
 
-	// Rysowanie ramki úledzonego bloku.
+	// Rysowanie ramki ≈õledzonego bloku.
 	DrawCubeBorder();
-	// Skierowanie poleceÒ do wykonania.
+	// Skierowanie polece≈Ñ do wykonania.
 	glFlush();
-	// Zamiana buforÛw koloru.
+	// Zamiana bufor√≥w koloru.
 	glutSwapBuffers();
 
 }
@@ -600,6 +425,7 @@ void Engine::ReleaseKey(unsigned char key, int x, int y) {
 }
 
 void Engine::Mouse(int button, int state, int x, int y) {
+	cout << button << "   " << state << endl;
 	if(state== GLUT_DOWN)
 	switch(button) {
 		case GLUT_LEFT_BUTTON:
@@ -629,19 +455,32 @@ void Engine::Mouse(int button, int state, int x, int y) {
 					break;
 
 				}
-				map->set(2, followedX, followedY, followedZ);
-				// Jeúli dochodzi do kolizji, usuÒ postawiony blok.
+				map->set(handID, followedX, followedY, followedZ);
+				// Je≈õli dochodzi do kolizji, usu≈Ñ postawiony blok.
 				if (Collision(Engine::x, Engine::y, Engine::z) || Collision(Engine::x, Engine::y + 1, Engine::z) || Collision(Engine::x, Engine::y + 2, Engine::z)) {
 					map->set(0, followedX, followedY, followedZ);
 				}
 			}
 			break;
+		case GLUT_MIDDLE_BUTTON:
+			handID = map->get(followedX, followedY, followedZ);
+			break;
+	}
+	else if( button == 3) {
+		handID++;
+		if (handID > handMax)
+			handID = 1;
+	}
+	else if (button == 4) {
+		handID--;
+		if (handID <= 0)
+			handID = handMax;
 	}
 }
 
 void Engine::MouseMove(int x, int y) {
 
-		// Ustawienie kursor z powrotem na úrodek.
+		// Ustawienie kursor z powrotem na ≈õrodek.
 		glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
 		// Obliczenie ruchu myszki i przypisanie do deltaAngleXZ i deltaAngleY.
 		deltaAngleXZ = (x - (glutGet(GLUT_WINDOW_WIDTH) / 2)) * 0.001f;
@@ -666,57 +505,102 @@ void Engine::MouseMove(int x, int y) {
 
 void Engine::Timer(int parameter)
 {
-	sunTimer+=0.05;
-	if (sunTimer > 0 && sunTimer  <= 75) {
+	sunTimer+=0.01;
+
+	if (sunTimer < 0 || sunTimer > 360)
+		sunTimer = 0;
+
+
+	if (sunTimer <= 75) {
 		sunPosition = sunTimer;
+		skyColor[0] = 0;
+		skyColor[1] = 0.6;
+		skyColor[2] = 1;
+
+		GLfloat ambient2[] = { 2,2,2, 1.0 };
+		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+		GLfloat diffuse2[] = { 0.4, 0.4, 0.4, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+
 	}
-	else if (sunTimer > 75 && sunTimer <= 120) {
+	else if (sunTimer <= 120) {
 		sunPosition = 75;
 
-		float delta1 = 1 - pow(((sunTimer - 75) / 45), 2);
-		float delta2 = 1 - pow(((sunTimer - 75) / 45),1.5);
-		float delta3 = 1 - pow(((sunTimer - 75) / 45), 1);
+		float delta1 = (1 - pow(((sunTimer - 75) / 45), 2));
+		float delta2 = (1 - pow(((sunTimer - 75) / 45), 1.5));
+		float delta3 = (1 - pow(((sunTimer - 75) / 45), 1));
 
-		GLfloat diffuse2[] = { delta1, delta2, delta3, 1.0 };
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-		GLfloat ambient2[] = { delta1-0.5, delta2 - 0.5, delta3 - 0.5, 1.0 };
+		skyColor[0] = delta3 - 1.0;
+		skyColor[1] = delta3 - 0.4;
+		skyColor[2] = delta3;
+		
+		GLfloat ambient2[] = { delta1 * 2, delta2 * 2, delta3 * 2, 1.0 };
 		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-
-		skyColor[0] = delta1 - 1.0;
-		skyColor[1] = delta1 - 0.4;
-		skyColor[2] = delta1;
-	}
-	else if (sunTimer > 180 && sunTimer <= 240) {
-		GLfloat diffuse2[] = { 0, 0, 0, 1.0 };
+		GLfloat diffuse2[] = { delta1 - 0.6, delta2 - 0.6, delta3 - 0.6, 1.0 };
+		for (int i = 0;i < 3;i++)
+			if (diffuse2[i] < 0)
+				diffuse2[i] = 0;
 		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-		sunPosition = 285;
+
 	}
-	else if (sunTimer > 240 && sunTimer <= 285) {
+	else if (sunTimer <= 180) {
+		sunPosition = 75;
+		skyColor[0] = 0;
+		skyColor[1] = 0;
+		skyColor[2] = 0;
+
+		GLfloat ambient2[] = { 0.0, 0.0, 0.0, 1.0 };
+		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+		GLfloat diffuse2[] = { 0.0, 0.0, 0.0, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+	}
+	else if (sunTimer <= 240) {
 		sunPosition = 285;
+		skyColor[0] = 0;
+		skyColor[1] = 0;
+		skyColor[2] = 0;
+
+		GLfloat ambient2[] = { 0.0, 0.0, 0.0, 1.0 };
+		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+		GLfloat diffuse2[] = { 0.0, 0.0, 0.0, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+	}
+	else if (sunTimer <= 285) {
+		sunPosition = 285;
+
 		float delta1 = pow(((sunTimer - 240) / 45), 1);
 		float delta2 = pow(((sunTimer - 240) / 45), 1.5);
 		float delta3 = pow(((sunTimer - 240) / 45), 2);
 
-		GLfloat diffuse2[] = { delta1, delta2, delta3, 1.0 };
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-		GLfloat ambient2[] = { delta1 - 0.5, delta2 - 0.5, delta3 - 0.5, 1.0 };
+		skyColor[0] = delta3 - 1.0;
+		skyColor[1] = delta3 - 0.4;
+		skyColor[2] = delta3;
+
+		GLfloat ambient2[] = { delta1 * 2, delta2 * 2, delta3 * 2, 1.0 };
 		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-
-		skyColor[0] = delta1 - 1.0;
-		skyColor[1] = delta1 - 0.4;
-		skyColor[2] = delta1;
+		GLfloat diffuse2[] = { delta1 - 0.6, delta2 - 0.6, delta3 - 0.6, 1.0 };
+		for (int i = 0;i < 3;i++)
+			if (diffuse2[i] < 0)
+				diffuse2[i] = 0;
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
 	}
-	else if (sunTimer > 285) {
+	else if (sunTimer <= 360) {
 		sunPosition = sunTimer;
-		if (sunTimer >= 360)
-			sunTimer = 0;
+		skyColor[0] = 0;
+		skyColor[1] = 0.6;
+		skyColor[2] = 1;
+
+		GLfloat ambient2[] = { 2.0, 2.0, 2.0, 1.0 };
+		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+		GLfloat diffuse2[] = { 0.4, 0.4, 0.4, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
 	}
 
-	// Jeúli wykonywany jest skok.
+	// Je≈õli wykonywany jest skok.
 	if (jump > 1) {
-		// Potencjalna zmiana wysokoúci y.
+		// Potencjalna zmiana wysoko≈õci y.
 		float deltaY;
-		// Zmiana wysokoúci jest dyktowana tym, w ktÛrym momencie lotu jest gracz.
+		// Zmiana wysoko≈õci jest dyktowana tym, w kt√≥rym momencie lotu jest gracz.
 		switch (jump) {
 		case 20: case 19: case 18: case 17: case 16:
 			deltaY = 0.15f;
@@ -747,65 +631,65 @@ void Engine::Timer(int parameter)
 			break;
 		}
 
-		// Sprawdzenie kolizji cia≥a na wysokoúci g≥owy z potencjalnie nowπ wartoúciπ y.
+		// Sprawdzenie kolizji cia≈Ça na wysoko≈õci g≈Çowy z potencjalnie nowƒÖ warto≈õciƒÖ y.
 		if (!Collision(x, y + 2.7f + deltaY, z))
-			// Przypisanie nowej wartoúci y.
+			// Przypisanie nowej warto≈õci y.
 			y += deltaY;
 
-		// Zmniejszenie licznika d≥ugoúci skoku.
+		// Zmniejszenie licznika d≈Çugo≈õci skoku.
 		jump -= 1;
 	}
 	// Grawitacja.
 	else if (y > 0) {
 		
-		// Obliczenie potencjalnie nowej wartoúci y.
+		// Obliczenie potencjalnie nowej warto≈õci y.
 		float newY = y - fallingSpeed;
-		// Sprawdzenie kolizji cia≥a na wysokoúci butÛw z potencjalnie nowπ wartoúciπ y.
+		// Sprawdzenie kolizji cia≈Ça na wysoko≈õci but√≥w z potencjalnie nowƒÖ warto≈õciƒÖ y.
 		if (!Collision(x, newY, z)) {
-			// Przypisanie nowej wartoúci y.
+			// Przypisanie nowej warto≈õci y.
 			y = newY;
-			// ZwiÍkszenie prÍdkoúci spadania.
+			// Zwiƒôkszenie prƒôdko≈õci spadania.
 			fallingSpeed += 0.006f;
 		}
 		else {
-			// WyrÛwnanie wysokoúci y do liczby ca≥kowitej.
+			// Wyr√≥wnanie wysoko≈õci y do liczby ca≈Çkowitej.
 			y = (int)(y);
-			// ZakoÒczenie skoku. Pozwala wykonaÊ nowy.
+			// Zako≈Ñczenie skoku. Pozwala wykonaƒá nowy.
 			jump = 0;
-			// Zresetowanie prÍdkoúci spadania do podstawowej.
+			// Zresetowanie prƒôdko≈õci spadania do podstawowej.
 			fallingSpeed = 0.1f;
 		}
 	}
 
-	// Jeúli wykonano ruch w przÛd/ty≥.
+	// Je≈õli wykonano ruch w prz√≥d/ty≈Ç.
 	if (deltaMoveStraight) {
-		// Obliczenie potencjalnie nowej wartoúci x.
+		// Obliczenie potencjalnie nowej warto≈õci x.
 		float newX = x + (deltaMoveStraight * lx);
-		// Sprawdzenie kolizji cia≥a na wysokoúci butÛw, pasa i g≥owy z potencjalnie nowπ wartoúciπ x.
+		// Sprawdzenie kolizji cia≈Ça na wysoko≈õci but√≥w, pasa i g≈Çowy z potencjalnie nowƒÖ warto≈õciƒÖ x.
 		if (!Collision(newX, y, z) && !Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
-			// Przypisanie nowej wartoúci do x.
+			// Przypisanie nowej warto≈õci do x.
 			x = newX;
-		// Obliczenie potencjalnie nowej wartoúci z.
+		// Obliczenie potencjalnie nowej warto≈õci z.
 		float newZ = z + (deltaMoveStraight * lz);
-		// Sprawdzenie kolizji cia≥a na wysokoúci butÛw, pasa i g≥owy z potencjalnie nowπ wartoúciπ z.
+		// Sprawdzenie kolizji cia≈Ça na wysoko≈õci but√≥w, pasa i g≈Çowy z potencjalnie nowƒÖ warto≈õciƒÖ z.
 		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
-			// Przypisanie nowej wartoúci z.
+			// Przypisanie nowej warto≈õci z.
 			z = newZ;
 
 	}
-	// Jeúli wykonano ruch na bok.
+	// Je≈õli wykonano ruch na bok.
 	if (deltaMoveSides) {
-		// Obliczenie potencjalnie nowej wartoúci x.
+		// Obliczenie potencjalnie nowej warto≈õci x.
 		float newX = x + (deltaMoveSides * -lz);
-		// Sprawdzenie kolizji cia≥a na wysokoúci butÛw, pasa i g≥owy z potencjalnie nowπ wartoúciπ x.
+		// Sprawdzenie kolizji cia≈Ça na wysoko≈õci but√≥w, pasa i g≈Çowy z potencjalnie nowƒÖ warto≈õciƒÖ x.
 		if (!Collision(newX, y, z) && !Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
-			// Przypisanie nowej wartoúci do x.
+			// Przypisanie nowej warto≈õci do x.
 			x = newX;
-		// Obliczenie potencjalnie nowej wartoúci z.
+		// Obliczenie potencjalnie nowej warto≈õci z.
 		float newZ = z + (deltaMoveSides * lx);
-		// Sprawdzenie kolizji cia≥a na wysokoúci butÛw, pasa i g≥owy z potencjalnie nowπ wartoúciπ z.
+		// Sprawdzenie kolizji cia≈Ça na wysoko≈õci but√≥w, pasa i g≈Çowy z potencjalnie nowƒÖ warto≈õciƒÖ z.
 		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
-			// Przypisanie nowej wartoúci z.
+			// Przypisanie nowej warto≈õci z.
 			z = newZ;
 	}
 
@@ -818,7 +702,7 @@ void Engine::Timer(int parameter)
 
 	Following();
 
-	// Wywo≥ania Timera za 10 milisekund.
+	// Wywo≈Çania Timera za 10 milisekund.
 	glutTimerFunc(10, Timer, 1);
 	// Render.
 	glutPostRedisplay();
@@ -845,7 +729,7 @@ void Engine::Following() {
 	float lz1 = lz;
 
 	float ly1 = ly;
-	for (int i = 0;i < 360;i++) {
+	for (int i = 0;i < 450;i++) {
 		x1 += lx1 * 0.01;
 		z1 += lz1 * 0.01;
 		y1 += ly1 * 0.01;

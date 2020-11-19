@@ -7,7 +7,7 @@ private:
 	int x = 32;
 	int y = 32;
 	int z = 32;
-	float map[32][32][32];
+	float map[1000][64][1000];
 public:
 	Map();
 	float get(int x2, int y2, int z2) {
