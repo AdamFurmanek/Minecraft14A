@@ -5,9 +5,9 @@ class Map
 {
 private:
 	int x = 32;
-	int y = 64;
-	int z = 64;
-	float map[32][64][64];
+	int y = 32;
+	int z = 32;
+	float map[32][32][32];
 public:
 	Map();
 	float get(int x2, int y2, int z2) {

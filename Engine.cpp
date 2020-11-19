@@ -1,12 +1,13 @@
 #include "Engine.h"
 #include <math.h>
+#include <GLFW/glfw3.h>
 
 Engine* Engine::engine = NULL;
 Map* Engine::map = new Map();
 
 float Engine::angleXZ = 0.0f;
-float Engine::lx = -10.0f, Engine::lz = -1.0f, Engine::ly = -1.0f;
-float Engine::x = 5.0f, Engine::z = 5.0f, Engine::y = 60.0f;
+float Engine::lx = 1.0f, Engine::lz = 1.0f, Engine::ly = 0.0f;
+float Engine::x = 15.0f, Engine::z = 15.0f, Engine::y = 10;
 float Engine::deltaAngleXZ = 0.0f, Engine::deltaAngleY = 0.0f, Engine::deltaMoveStraight = 0.0f, Engine::deltaMoveSides = 0.0f;
 int Engine::jump = 0;
 float Engine::fallingSpeed = 0.1f;
@@ -15,10 +16,158 @@ float Engine::followedX = NULL;
 float Engine::followedY = NULL;
 float Engine::followedZ = NULL;
 int Engine::followedWall = NULL;
+bool Engine::flashlight = false;
+float sunPosition = 0, sunTimer = 0;
+GLfloat skyColor[] = { 0.0f, 0.6f, 1.0f };
+GLuint texture;
+
+const float cube_vert[] = {
+1.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 1.0f,
+1.0f, 1.0f, 1.0f,
+
+1.0f, 0.0f, 1.0f,
+0.0f, 0.0f, 1.0f,
+0.0f, 0.0f, 0.0f,
+1.0f, 0.0f, 0.0f,
+
+1.0f, 1.0f, 1.0f,
+0.0f, 1.0f, 1.0f,
+0.0f, 0.0f, 1.0f,
+1.0f, 0.0f, 1.0f,
+
+1.0f, 0.0f, 0.0f,
+0.0f, 0.0f, 0.0f,
+0.0f, 1.0f, 0.0f,
+1.0f, 1.0f, 0.0f,
+
+0.0f, 1.0f, 1.0f,
+0.0f, 1.0f, 0.0f,
+0.0f, 0.0f, 0.0f,
+0.0f, 0.0f, 1.0f,
+
+1.0f, 1.0f, 0.0f,
+1.0f, 1.0f, 1.0f,
+1.0f, 0.0f, 1.0f,
+1.0f, 0.0f, 0.0f
+};
+
+const float cube_norm[] = {
+0.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f,
+
+0.0f, -1.0f, 0.0f,
+0.0f, -1.0f, 0.0f,
+0.0f, -1.0f, 0.0f,
+0.0f, -1.0f, 0.0f,
+
+0.0f, 0.0f, 1.0f,
+0.0f, 0.0f, 1.0f,
+0.0f, 0.0f, 1.0f,
+0.0f, 0.0f, 1.0f,
+
+0.0f, 0.0f, -1.0f,
+0.0f, 0.0f, -1.0f,
+0.0f, 0.0f, -1.0f,
+0.0f, 0.0f, -1.0f,
+
+-1.0f, 0.0f, 0.0f,
+-1.0f, 0.0f, 0.0f,
+-1.0f, 0.0f, 0.0f,
+-1.0f, 0.0f, 0.0f,
+
+1.0f, 0.0f, 0.0f,
+1.0f, 0.0f, 0.0f,
+1.0f, 0.0f, 0.0f,
+1.0f, 0.0f, 0.0f,
+};
+
+const unsigned char cube_ind[] = {
+0, 1, 2, // strona 1
+2, 3, 0,
+4, 5, 6, // strona 2
+6, 7, 4,
+8, 9, 10, // strona 3
+10, 11, 8,
+12, 13, 14, // strona 4
+14, 15, 12,
+16, 17, 18, // strona 5
+18, 19, 16,
+20, 21, 22, // strona 6
+22, 23, 20,
+};
+
+void DrawBox() {
+
+	// W³¹czenie tabel i zdefiniowanie buforów:
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glNormalPointer(GL_FLOAT, 0, cube_norm);
+	//glEnableClientState(GL_COLOR_ARRAY);
+	//glColorPointer(3, GL_FLOAT, 0, cube_cols);
+	// Narysowanie obiektu:
+	glDrawElements(GL_TRIANGLES, sizeof(cube_ind),
+		GL_UNSIGNED_BYTE, cube_ind);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+}
+
+GLuint LoadTexture(const char* filename)
+{
+	GLuint texture;
+	int width, height;
+	unsigned char* data;
+
+	FILE* file;
+	file = fopen(filename, "rb");
+
+	if (file == NULL) {
+		cout << "NIE MA TEXTURY";
+		return 0;
+	}
+	width = 64;
+	height = 64;
+	data = (unsigned char*)malloc(width * height * 3);
+	//int size = fseek(file,);
+	fread(data, width * height * 3, 1, file);
+	fclose(file);
+
+	for (int i = 0; i < width * height; ++i)
+	{
+		int index = i * 3;
+		unsigned char B, R;
+		B = data[index];
+		R = data[index + 2];
+
+		data[index] = R;
+		data[index + 2] = B;
+	}
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+	free(data);
+
+	return texture;
+}
 
 Engine::Engine()
 {
-	
+	texture = LoadTexture("Textures\\texture.bmp");
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(texture, 0, GL_DEPTH_COMPONENT, 64, 64, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+
 }
 
 Engine::~Engine() {
@@ -65,7 +214,56 @@ void Engine::init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	glutIgnoreKeyRepeat(1);
 	// Ukrycie kursora.
 	glutSetCursor(GLUT_CURSOR_NONE);
+	// Gruboœæ rysowania linii.
+	glLineWidth(2);
+	// W³¹czenie testu bufora g³êbokoœci.
+	glEnable(GL_DEPTH_TEST);
+	// w³¹czenie oœwietlenia
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT2);
 
+
+	GLfloat ambient1[] = { 0, 0, 0, 1.0 };
+	GLfloat diffuse1[] = { 1.0, 0.9, 0.7, 1.0 };
+	GLfloat specular1[] = { 0, 0, 0, 1.0 };
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient1);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse1);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, specular1);
+
+	// Ogólna jasnoœæ (wartoœæ <1 - przypomina latarkê)
+	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.7);
+	// Wygaszanie œwiat³a (liniowo)
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05);
+	// Wygaszanie œwiat³a (kwadratowo)
+	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0);
+
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 20.0);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 35);
+
+	GLfloat ambient2[] = { 0.5, 0.5, 0.5, 1.0 };
+	GLfloat diffuse2[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat specular2[] = { 0, 0, 0, 1.0 };
+
+	glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, specular2);
+
+	// Ogólna jasnoœæ (wartoœæ <1 - przypomina latarkê)
+	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.1);
+	// Wygaszanie œwiat³a (liniowo)
+	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
+
+	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 180);
+
+
+
+	glEnable(GL_TEXTURE_2D);
+
+	// Face culling.
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
 
 	// Wywo³anie funkcji timera.
 	glutTimerFunc(15, Timer, 1);
@@ -84,33 +282,80 @@ void DrawCursor() {
 	glEnd();
 }
 
-void DrawCube(int x, int y, int z, int id) {
+void DrawCube(float x, float y, float z, int id) {
 
 	GLfloat diffuse[4] = { 0, 0, 0, 0 };
-	GLfloat ambient[4] = { 0, 0, 0, 0 };
-	GLfloat specular[4] = { 0, 0, 0, 0 };
-	GLfloat shininess = 0;
+	GLfloat ambient[4] = { 0.5, 0.5, 0.5, 0 };
+	GLfloat specular[4] = { 0.5, 0.5, 0.5, 0 };
+	GLfloat shininess = 0.5;
 
-	// Pocz¹tek definicji czworok¹ta.
-	glBegin(GL_QUADS);
 	// Ustawienie koloru na podstawie id.
 	switch (id) {
 	case 1:
 		// Zielony
-		diffuse[1] = 1;
+		diffuse[1] = 0.7;
 		break;
 	case 2:
 		// Czerwony
-		diffuse[0] = 1;
+		diffuse[0] = 0.7;
 		break;
 	}
-
-	// w³aœciwoœci materia³u
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+	
+
+
+	/*
+	//Pocz¹tek definicji czworok¹ta.
+	glBegin(GL_QUADS);
+	glNormal3f(x, y + 2.0f, z);
+	// Góra
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+
+	glNormal3f(x, y - 1.0f, z);
+	// Dó³
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+
+	glNormal3f(x, y, z + 2.0f);
+	// Przód
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+
+	glNormal3f(x, y, z - 1.0f);
+	// Ty³
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+
+	glNormal3f(x - 1.0f, y, z);
+	// Lewo
+	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
+	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
+
+	glNormal3f(x + 2.0f, y, z);
+	// Prawo
+	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
+	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
+	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
+
+	// Koniec definicji prymitywu.
+	glEnd();
+	*/
 
 	/*
 	// Góra
@@ -174,51 +419,6 @@ void DrawCube(int x, int y, int z, int id) {
 	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
 	*/
 
-
-	glNormal3f(x, y + 2.0f, z);
-	// Góra
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-
-	glNormal3f(x, y - 1.0f, z);
-	// Dó³
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-
-	glNormal3f(x, y, z + 2.0f);
-	// Przód
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-
-	glNormal3f(x, y, z - 1.0f);
-	// Ty³
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-
-	glNormal3f(x - 1.0f, y, z);
-	// Lewo
-	glVertex3f(x + 0.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 0.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 0.0f);
-	glVertex3f(x + 0.0f, y + 0.0f, z + 1.0f);
-
-	glNormal3f(x + 2.0f, y, z);
-	// Prawo
-	glVertex3f(x + 1.0f, y + 1.0f, z + 0.0f);
-	glVertex3f(x + 1.0f, y + 1.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 1.0f);
-	glVertex3f(x + 1.0f, y + 0.0f, z + 0.0f);
-	
-	// Koniec definicji prymitywu.
-	glEnd();
 }
 
 void Engine::DrawCubeBorder() {
@@ -232,60 +432,88 @@ void Engine::DrawCubeBorder() {
 
 void Engine::Display() {
 
-	glLineWidth(2);
 	// Czyszczenie bufora koloru i bufora g³êbi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Kolor t³a.
-	glClearColor(0.431f, 0.698f, 0.98f, 1.0);
+	glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0);
+
 	// Wybór macierzy modelowania.
 	glMatrixMode(GL_MODELVIEW);
 	// Macierz jednostkowa.
 	glLoadIdentity();
-
+	// Rysowanie celownika.
 	DrawCursor();
 
 	// Ustawienie kamery.
-	gluLookAt(x, y + 2.5, z, x + lx, y + ly + 2.5, z + lz, 0.0f, 1.0f, 0.0f);
-
-	DrawCubeBorder();
-	// W³¹czenie testu bufora g³êbokoœci.
-	glEnable(GL_DEPTH_TEST);
-	// w³¹czenie oœwietlenia
-	glEnable(GL_LIGHTING);
-	// w³¹czenie œwiat³a GL_LIGHT0 z parametrami domyœlnymi
-	glEnable(GL_LIGHT0);
-	glEnable(GL_NORMALIZE);
-
-	GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 0.0 };
-	GLfloat light_diffuse[] = { 0.7, 0.7, 0.7, 0.0 };
-	GLfloat light_specular[] = { 0, 0, 0, 0.0 };
-	GLfloat light_position[] = { 64.0, 64.0, 64.0, 0.0 };
-	GLfloat spot_direction[] = { -1.0, -1.0, 0.0 };
-
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
-
-	//cout << "Gracz: " << x << "   " << y << "   " << z << "   ";
-	//glGetLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	//cout << "Kamera: " << light_position[0] << "   " << light_position[1] << "   " << light_position[2] << "   Kierunek: ";
-	//glGetLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
-	//cout << spot_direction[0] << "   " << spot_direction[1] << "   " << spot_direction[2] << "   " << endl;
+	gluLookAt(x, y + 2.5, z, x + lx, y + ly + 2.5, z + lz, 0.0f, 0.9f, 0.0f);
 
 
+	GLfloat position1[] = { x, y + 2.5, z, 1.0 };
+	GLfloat direction1[] = { lx, ly, lz };
+	glLightfv(GL_LIGHT1, GL_POSITION, position1);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, direction1);
+
+
+	glPushMatrix();
+		glTranslatef(0, 4, 16);
+		glRotatef(sunPosition, 1, 0, 0);
+
+		GLfloat position2[] = { map->getX() / 2, map->getY() , 0, 0.0 };
+		GLfloat direction2[] = { 0, -1, 0 };
+		glLightfv(GL_LIGHT2, GL_POSITION, position2);
+		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direction2);
+
+		glPushMatrix();
+			glTranslatef(map->getX() / 2, map->getY() , 0);
+			glutSolidSphere(1.0, 4, 4);
+		glPopMatrix();
+	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(texture, 0, GL_DEPTH_COMPONENT, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, &texture);
+
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(20.0f, 3.0f, 20.0f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(20.0f, 3.0f, 21.0f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(20.0f, 2.0f, 21.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(20.0f, 2.0f, 20.0f);
+	glEnd();
+
+	GLfloat diffuse[4] = { 1, 1, 1, 0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
 
 	for (int x1 = 0;x1 < map->getX(); x1++) {
 		for (int y1 = 0;y1 < map->getY();y1++) {
 			for (int z1 = 0;z1 < map->getZ();z1++) {
+
 				if (map->get(x1, y1, z1) != 0) {
-					DrawCube(x1, y1, z1, map->get(x1, y1, z1));
+					// Ustawienie koloru na podstawie id.
+					switch ((int)map->get(x1, y1, z1)) {
+					case 1:
+						// Zielony
+						glColor3f(0, 255, 0);
+						break;
+					case 2:
+						// Czerwony
+						glColor3f(255, 0, 0);
+						break;
+					}
+					glPushMatrix();
+					glTranslatef(x1, y1, z1);
+					DrawBox();
+					glPopMatrix();
 				}
 			}
 		}
 	}
 
+	// Rysowanie ramki œledzonego bloku.
+	DrawCubeBorder();
 	// Skierowanie poleceñ do wykonania.
 	glFlush();
 	// Zamiana buforów koloru.
@@ -305,7 +533,7 @@ void Engine::Reshape(int w, int h) {
 	glViewport(0, 0, w, h);
 
 	// Set the correct perspective.
-	gluPerspective(viewField, (w * 1.0 / h), 0.01, 100);
+	gluPerspective(viewField, (w * 1.0 / h), 0.01, 64);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -323,6 +551,13 @@ void Engine::Keyboard(unsigned char key, int x, int y) {
 void Engine::PressKey(unsigned char key, int xx, int yy) {
 
 	switch (key) {
+	case'f':
+		if (flashlight)
+			glDisable(GL_LIGHT1);
+		else
+			glEnable(GL_LIGHT1);
+		flashlight = !flashlight;
+		break;
 	case 'a': deltaMoveSides = -0.12f; break;
 	case 'd': deltaMoveSides = 0.12f; break;
 	case 'w': deltaMoveStraight = 0.12f; break;
@@ -368,28 +603,28 @@ void Engine::Mouse(int button, int state, int x, int y) {
 	if(state== GLUT_DOWN)
 	switch(button) {
 		case GLUT_LEFT_BUTTON:
-			if (followedX != NULL)
+			if (followedX != NULL&&followedY!=0)
 				map->set(0, followedX, followedY, followedZ);
 		break;
 		case GLUT_RIGHT_BUTTON:
 			if (followedWall != NULL) {
 				switch (followedWall) {
-				case 0:
+				case 1:
 					followedX += 1;
 					break;
-				case 1:
+				case 2:
 					followedX -= 1;
 					break;
-				case 2:
+				case 3:
 					followedY += 1;
 					break;
-				case 3:
+				case 4:
 					followedY -= 1;
 					break;
-				case 4:
+				case 5:
 					followedZ += 1;
 					break;
-				case 5:
+				case 6:
 					followedZ -= 1;
 					break;
 
@@ -415,6 +650,7 @@ void Engine::MouseMove(int x, int y) {
 		// Aktualizacja wektora kamery.
 		lx = sin(angleXZ + deltaAngleXZ);
 		lz = -cos(angleXZ + deltaAngleXZ);
+
 		if (deltaAngleY > 0)
 			deltaAngleY += ly * ly / 98;
 		else if (deltaAngleY < 0)
@@ -424,12 +660,58 @@ void Engine::MouseMove(int x, int y) {
 			ly = 7;
 		if (ly < -7)
 			ly = -7;
-		
+		//cout << "lx: " << lx << "ly: " << ly << "lz: " << lz << endl;
 
 }
 
 void Engine::Timer(int parameter)
 {
+	sunTimer+=0.05;
+	if (sunTimer > 0 && sunTimer  <= 75) {
+		sunPosition = sunTimer;
+	}
+	else if (sunTimer > 75 && sunTimer <= 120) {
+		sunPosition = 75;
+
+		float delta1 = 1 - pow(((sunTimer - 75) / 45), 2);
+		float delta2 = 1 - pow(((sunTimer - 75) / 45),1.5);
+		float delta3 = 1 - pow(((sunTimer - 75) / 45), 1);
+
+		GLfloat diffuse2[] = { delta1, delta2, delta3, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+		GLfloat ambient2[] = { delta1-0.5, delta2 - 0.5, delta3 - 0.5, 1.0 };
+		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+
+		skyColor[0] = delta1 - 1.0;
+		skyColor[1] = delta1 - 0.4;
+		skyColor[2] = delta1;
+	}
+	else if (sunTimer > 180 && sunTimer <= 240) {
+		GLfloat diffuse2[] = { 0, 0, 0, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+		sunPosition = 285;
+	}
+	else if (sunTimer > 240 && sunTimer <= 285) {
+		sunPosition = 285;
+		float delta1 = pow(((sunTimer - 240) / 45), 1);
+		float delta2 = pow(((sunTimer - 240) / 45), 1.5);
+		float delta3 = pow(((sunTimer - 240) / 45), 2);
+
+		GLfloat diffuse2[] = { delta1, delta2, delta3, 1.0 };
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
+		GLfloat ambient2[] = { delta1 - 0.5, delta2 - 0.5, delta3 - 0.5, 1.0 };
+		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
+
+		skyColor[0] = delta1 - 1.0;
+		skyColor[1] = delta1 - 0.4;
+		skyColor[2] = delta1;
+	}
+	else if (sunTimer > 285) {
+		sunPosition = sunTimer;
+		if (sunTimer >= 360)
+			sunTimer = 0;
+	}
+
 	// Jeœli wykonywany jest skok.
 	if (jump > 1) {
 		// Potencjalna zmiana wysokoœci y.
@@ -563,13 +845,15 @@ void Engine::Following() {
 	float lz1 = lz;
 
 	float ly1 = ly;
-	for (int i = 0;i < 500;i++) {
+	for (int i = 0;i < 360;i++) {
 		x1 += lx1 * 0.01;
 		z1 += lz1 * 0.01;
 		y1 += ly1 * 0.01;
 		x2 = (int)(x1);
 		y2 = (int)(y1);
 		z2 = (int)(z1);
+		if (y2 > y + 6 || y2 < y - 3)
+			break;
 		if (map->get(x2, y2, z2) != 0) {
 			//cout << x << "   " << y << "   " << z << endl;
 			//cout << x2 << "   " << y2 << "   " << z2 << endl;
@@ -595,22 +879,22 @@ void Engine::Wall(float x1, float y1, float z1) {
 
 	if (abs(x1)>abs(y1)&& abs(x1) > abs(z1)) {
 		if (x1 >= 0)
-			followedWall = 0;
-		else if (x1 < 0)
 			followedWall = 1;
+		else if (x1 < 0)
+			followedWall = 2;
 	}
 	else if (abs(y1) > abs(x1) && abs(y1) > abs(z1)) {
 		if (y1 >= 0)
-			followedWall = 2;
-		else if (y1 < 0)
 			followedWall = 3;
+		else if (y1 < 0)
+			followedWall = 4;
 	}
 	else if (abs(z1) > abs(x1) && abs(z1) > abs(y1)) {
 		if (z1 >= 0)
-			followedWall = 4;
-		else if (z1 < 0)
 			followedWall = 5;
+		else if (z1 < 0)
+			followedWall = 6;
 	}
-	cout << followedWall << endl;
+	//cout << followedWall << endl;
 
 }

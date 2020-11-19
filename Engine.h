@@ -1,9 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
 #ifndef Engine_h
 #define Engine_h
 
 #include <iostream>
 #include <stdlib.h>
 #include <GL/glut.h>
+#include <math.h>
 #include "Map.h"
 
 using namespace std;
@@ -35,6 +37,8 @@ private:
 	static float fallingSpeed;
 	// Pole widzenia.
 	static int viewField;
+	// Latarka.
+	static bool flashlight;
 
 	static void Display();
 	static void Reshape(int w, int h);
