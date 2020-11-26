@@ -1,6 +1,5 @@
-
-#ifndef Engine_h
-#define Engine_h
+#ifndef Window_h
+#define Window_h
 
 #include <iostream>
 #include <stdlib.h>

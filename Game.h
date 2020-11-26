@@ -8,39 +8,27 @@
 #include "Targa.h"
 #include "Ambient.h"
 #include "Textures.h"
+#include "Camera.h"
+#include "Player.h"
+#include "Interaction.h"
 
 using namespace std;
 
 class Game
 {
-	// K¹t rotacji kierunku kamery.
-	static float angleXZ;
-	// Wektor reprezentuj¹cy kierunek kamery.
-	static float lx, lz, ly;
-	// Pozycja œrodka gracza (y to wysokoœæ butów).
-	static float x, y, z;
-	// Pozycja œledzonego bloku.
-	static float followedX, followedY, followedZ;
-	// Œciana œledzonego bloku.
-	static int followedWall;
-	// Zmiany k¹ta XZ oraz Y.
-	static float deltaAngleXZ, deltaAngleY;
-	// Zmiany przemieszczenia prosto-ty³ i na boki.
-	static float deltaMoveStraight, deltaMoveSides;
-	// Czas trwania skoku.
-	static int jump;
-	// Szybkoœæ spadania.
-	static float fallingSpeed;
-	// Pole widzenia.
-	static int viewField;
-	static int viewDistance;
-	// Latarka.
-	static bool flashlight;
+
 
 	public:
+		// Pole widzenia.
+		static int viewField;
+		static int viewDistance;
+
 		static Map* map;
 		static Ambient* ambient;
 		static Textures* textures;
+		static Camera* camera;
+		static Player* player;
+		static Interaction* interaction;
 
 	static void GameInit();
 	static void GameDisplay();
@@ -53,12 +41,6 @@ class Game
 	static void LoadGame();
 	static void CreateGame();
 
-	static void ComputeFall();
-	static void ComputeMove();
-	static void ComputeTracking();
-	static bool Collision(float x, float y, float z);
-	static void Wall(float x1, float y1, float z1);
-	static void DrawCubeBorder();
 	static void DrawCursor();
 
 	static void GameTimer();

@@ -1,44 +1,9 @@
 ﻿  Game.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(40,44): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(47,50): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(49,49): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(85,31): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(85,31): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(186,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(186,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(186,17): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(211,44): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(211,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(211,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(214,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(214,29): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(214,18): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(219,44): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(219,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(219,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(262,19): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(342,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(386,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(393,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(394,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(395,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(396,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(397,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(398,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(401,24): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(401,20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(401,16): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(420,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(421,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(422,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(452,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(453,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(454,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(455,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(464,59): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(464,42): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(464,25): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(466,62): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(466,44): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(466,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-  Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Debug\Engine3D.exe
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(88,17): error C2065: 'viewField': undeclared identifier
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(132,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(133,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(134,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(135,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+  Window.cpp
+  main.cpp
+  Generating Code...

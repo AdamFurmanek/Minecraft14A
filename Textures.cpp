@@ -189,6 +189,8 @@ Textures::Textures(Map* map) {
 	// Face culling.
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
+	// Włączenie testu bufora głębokości.
+	glEnable(GL_DEPTH_TEST);
 
 }
 

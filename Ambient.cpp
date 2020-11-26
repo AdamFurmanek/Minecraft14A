@@ -133,6 +133,7 @@ void Ambient::ComputeSun() {
 		GLfloat diffuse2[] = { 0.4, 0.4, 0.4, 1.0 };
 		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
 	}
+	glFogfv(GL_FOG_COLOR, skyColor);
 }
 
 void Ambient::AmbientDisplay(float x, float y, float z) {
