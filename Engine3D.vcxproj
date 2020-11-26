@@ -139,6 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ambient.cpp" />
+    <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -149,6 +151,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ambient.h" />
+    <ClInclude Include="Textures.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />

@@ -1,10 +1,5 @@
 #include "Map.h"
 
-#include <iostream>
-#include <stdlib.h>
-
-using namespace std;
-
 Map::Map() {
 
 	srand(NULL);

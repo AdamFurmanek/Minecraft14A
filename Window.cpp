@@ -3,7 +3,6 @@
 Window* Window::engine = NULL;
 Game* Window::game = new Game();
 
-
 Window::Window()
 {
 
@@ -94,13 +93,7 @@ void Window::MouseMove(int x1, int y1) {
 
 void Window::Timer(int parameter)
 {
-	game->ComputeSun();
-
-	game->ComputeFall();
-
-	game->ComputeMove();
-
-	game->ComputeTracking();
+	game->GameTimer();
 
 	glutTimerFunc(15, Timer, 1);
 

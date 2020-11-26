@@ -6,6 +6,8 @@
 #include <math.h>
 #include "Map.h"
 #include "Targa.h"
+#include "Ambient.h"
+#include "Textures.h"
 
 using namespace std;
 
@@ -35,9 +37,10 @@ class Game
 	// Latarka.
 	static bool flashlight;
 
-	static Map* map;
-
 	public:
+		static Map* map;
+		static Ambient* ambient;
+		static Textures* textures;
 
 	static void GameInit();
 	static void GameDisplay();
@@ -50,7 +53,6 @@ class Game
 	static void LoadGame();
 	static void CreateGame();
 
-	static void ComputeSun();
 	static void ComputeFall();
 	static void ComputeMove();
 	static void ComputeTracking();
@@ -58,6 +60,8 @@ class Game
 	static void Wall(float x1, float y1, float z1);
 	static void DrawCubeBorder();
 	static void DrawCursor();
+
+	static void GameTimer();
 };
 
 #endif

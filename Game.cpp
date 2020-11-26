@@ -1,7 +1,8 @@
 ﻿#include "Game.h"
-#include <vector>
 
-Map* Game::map = new Map();
+Map* Game::map = NULL;
+Ambient* Game::ambient = NULL;
+Textures* Game::textures = NULL;
 
 float Game::angleXZ = 0.0f;
 float Game::lx = 1.0f, Game::lz = 1.0f, Game::ly = 0.0f;
@@ -16,9 +17,6 @@ float Game::followedY = NULL;
 float Game::followedZ = NULL;
 int Game::followedWall = NULL;
 bool Game::flashlight = false;
-float sunPosition = 0, sunTimer = 100;
-GLfloat skyColor[] = { 0.0f, 0.6f, 1.0f };
-GLuint TexID[14];
 int handID = 1, handMax = 13;
 
 // variables to compute frames per second
@@ -26,133 +24,17 @@ int frame;
 long time, timebase;
 char s[50];
 
-const float cube_vert[] = {
-1.001f, 1.001f, -0.001f,
--0.001f, 1.001f, -0.001f,
-1.001f, 1.001f, 1.001f,
--0.001f, 1.001f, 1.001f,
-
-1.001f, -0.001f, 1.001f,
--0.001f, -0.001f, 1.001f,
-1.001f, -0.001f, -0.001f,
--0.001f, -0.001f, -0.001f,
-
--0.001f, 1.001f, 1.001f,
--0.001f, -0.001f, 1.001f,
-1.001f, 1.001f, 1.001f,
-1.001f, -0.001f, 1.001f,
-
-1.001f, -0.001f, -0.001f,
--0.001f, -0.001f, -0.001f,
-1.001f, 1.001f, -0.001f,
--0.001f, 1.001f, -0.001f,
-
--0.001f, 1.001f, -0.001f,
--0.001f, -0.001f, -0.001f,
--0.001f, 1.001f, 1.001f,
--0.001f, -0.001f, 1.001f,
-
-1.001f, 1.001f, -0.001f,
-1.001f, 1.001f, 1.001f,
-1.001f, -0.001f, -0.001f,
-1.001f, -0.001f, 1.001f
-
-};
-
-const float cube_norm[] = {
-0.0f, 1.0f, 0.0f,
-0.0f, 1.0f, 0.0f,
-0.0f, 1.0f, 0.0f,
-0.0f, 1.0f, 0.0f,
-
-0.0f, -1.0f, 0.0f,
-0.0f, -1.0f, 0.0f,
-0.0f, -1.0f, 0.0f,
-0.0f, -1.0f, 0.0f,
-
-0.0f, 0.0f, 1.0f,
-0.0f, 0.0f, 1.0f,
-0.0f, 0.0f, 1.0f,
-0.0f, 0.0f, 1.0f,
-
-0.0f, 0.0f, -1.0f,
-0.0f, 0.0f, -1.0f,
-0.0f, 0.0f, -1.0f,
-0.0f, 0.0f, -1.0f,
-
--1.0f, 0.0f, 0.0f,
--1.0f, 0.0f, 0.0f,
--1.0f, 0.0f, 0.0f,
--1.0f, 0.0f, 0.0f,
-
-1.0f, 0.0f, 0.0f,
-1.0f, 0.0f, 0.0f,
-1.0f, 0.0f, 0.0f,
-1.0f, 0.0f, 0.0f,
-};
-
-const unsigned char cube_ind[] = {
-0, 1, 2,// strona 1
-1, 3, 2,
-4, 5, 6, // strona 2
-5, 7, 6,
-8, 9, 10, // strona 3
-9, 11, 10,
-12, 13, 14, // strona 4
-13, 15, 14,
-16, 17, 18, // strona 5
-17, 19, 18,
-20, 21, 22, // strona 6
-21, 23, 22
-};
-
-const unsigned char wallTop[] = {
-0, 1, 2,// strona 1
-1, 3, 2
-};
-
-const unsigned char wallBottom[] = {
-4, 5, 6, // strona 2
-5, 7, 6
-};
-
-const unsigned char wallZp[] = {
-8, 9, 10, // strona 3
-9, 11, 10
-};
-
-const unsigned char wallZm[] = {
-12, 13, 14, // strona 4
-13, 15, 14
-};
-
-const unsigned char wallXm[] = {
-16, 17, 18, // strona 5
-17, 19, 18
-};
-
-const unsigned char wallXp[] = {
-20, 21, 22, // strona 6
-21, 23, 22
-};
-
-const float cube_texc[] = {
-	0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f,
-	1.0f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 1.0f,
-	1.0f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 1.0f,
-	0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f,
-	1.0f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f,		0.0f, 1.0f,
-	0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f
-};
-
 void Game::GameInit() {
+
+	map = new Map();
+	ambient = new Ambient();
+	textures = new Textures(map);
+
 	glutSetCursor(GLUT_CURSOR_NONE);
 	// Grubość rysowania linii.
 	glLineWidth(3);
 	// Włączenie testu bufora głębokości.
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHT2);
-
 
 	GLfloat ambient1[] = { 0, 0, 0, 1.0 };
 	GLfloat diffuse1[] = { 1.0, 0.9, 0.7, 1.0 };
@@ -171,85 +53,6 @@ void Game::GameInit() {
 	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 10.0);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
 
-	// Włączenie tabel i zdefiniowanie buforów:
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, 0, cube_norm);
-
-	glEnable(GL_TEXTURE_2D);
-
-	// Wygenerowanie 14 identyfikatorów dla tekstur:
-	glGenTextures(14, TexID);
-	// Aktywacja trzech tekstur i ³adowanie ich z plików TGA:
-	glBindTexture(GL_TEXTURE_2D, TexID[0]);
-	LoadTGAMipmap(_strdup("nic"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[1]);
-	LoadTGAMipmap(_strdup("Textures//bedrock.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[2]);
-	LoadTGAMipmap(_strdup("Textures//stone.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[3]);
-	LoadTGAMipmap(_strdup("Textures//dirt.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[4]);
-	LoadTGAMipmap(_strdup("Textures//grass.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[5]);
-	LoadTGAMipmap(_strdup("Textures//sand.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[6]);
-	LoadTGAMipmap(_strdup("Textures//sandstone.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[7]);
-	LoadTGAMipmap(_strdup("Textures//tree.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[8]);
-	LoadTGAMipmap(_strdup("Textures//leaves.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[9]);
-	LoadTGAMipmap(_strdup("Textures//obsidian.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[10]);
-	LoadTGAMipmap(_strdup("Textures//smooth_stone.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[11]);
-	LoadTGAMipmap(_strdup("Textures//stone_bricks.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[12]);
-	LoadTGAMipmap(_strdup("Textures//purple_plate.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, TexID[13]);
-	LoadTGAMipmap(_strdup("Textures//red_plate.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-
-	// Przygotowanie szeœcianu:
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	// Tabela z punktami:
-	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
-	// Tabela ze wspó³rzêdnymi tekstur (2 wspó³rzêdne):
-	glTexCoordPointer(2, GL_FLOAT, 0, cube_texc);
-	// Face culling.
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
 }
 
 void Game::GameDisplay() {
@@ -267,7 +70,7 @@ void Game::GameDisplay() {
 	// Czyszczenie bufora koloru i bufora głębi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Kolor tła.
-	glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0);
+	ambient->clearColor();
 
 	// Wybór macierzy modelowania.
 	glMatrixMode(GL_MODELVIEW);
@@ -284,113 +87,9 @@ void Game::GameDisplay() {
 	glLightfv(GL_LIGHT1, GL_POSITION, position1);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, direction1);
 
-	glPushMatrix();
-		glTranslatef(0, 0, z);
-		glRotatef(sunPosition, 1, 0, 0);
-		GLfloat position2[] = { x, y+30 , 0, 1.0 };
-		GLfloat direction2[] = { 0, -1, 0 };
-		glLightfv(GL_LIGHT2, GL_POSITION, position2);
-		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direction2);
-	glPopMatrix();
+	ambient->AmbientDisplay(x, y, z);
 
-	glPushMatrix();
-		glTranslatef(0, 0, z);
-		glRotatef(sunTimer, 1, 0, 0);
-		glTranslatef(x, y + 30, 0);
-		glDisable(GL_LIGHTING);
-		glColor3f(1, 1, 0.7);
-		glutSolidSphere(1, 10, 10);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(0, 0, z);
-		glRotatef(sunTimer+180, 1, 0, 0);
-		glTranslatef(x, y + 30, 0);
-		glDisable(GL_LIGHTING);
-		glColor3f(1, 1, 1);
-		glutSolidSphere(0.8, 10, 10);
-	glPopMatrix();
-
-	GLfloat diffuse[4] = { 1, 1, 1, 0 };
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-
-	// wskazówki jakości generacji mgły
-
-	GLint fog_hint = GL_DONT_CARE;
-
-	// początek i koniec oddziaływania mgły liniowej
-
-	GLfloat fog_start = viewDistance-6;
-	GLfloat fog_end = viewDistance-4;
-
-
-	// gęstość mgły
-
-	GLfloat fog_density = 0.001;
-
-	// rodzaj mgły
-
-	GLfloat fog_mode = GL_LINEAR;
-
-	// włączenie efektu mgły
-	glEnable(GL_FOG);
-
-	// wskazówki jakości generacji mgły
-	glHint(GL_FOG_HINT, fog_hint);
-
-	// kolor mgły
-	glFogfv(GL_FOG_COLOR, skyColor);
-
-	// gęstość mgły
-	glFogf(GL_FOG_DENSITY, fog_density);
-
-	// rodzaj mgły
-	glFogf(GL_FOG_MODE, fog_mode);
-
-	// początek i koniec oddziaływania mgły liniowej
-	glFogf(GL_FOG_START, fog_start);
-	glFogf(GL_FOG_END, fog_end);
-
-
-
-
-
-
-
-
-
-
-
-	glEnable(GL_LIGHTING);
-
-	int x1, y1, z1;
-	char v;
-	for (x1 = x - viewDistance;x1 < x + viewDistance; x1++) {
-		for (y1 = 0;y1 < map->getY();y1++) {
-			for (z1 = z - viewDistance;z1 < z + viewDistance;z1++) {
-				if (map->get(x1, y1, z1) > 0 && (v =map->getV(x1, y1, z1)) != 63) {
-					glTranslatef(x1, y1, z1);
-					glBindTexture(GL_TEXTURE_2D, TexID[map->get(x1, y1, z1)]);
-
-					if (((v >> 0) & 1UL) == 0 && y + 2.5 > y1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallTop), GL_UNSIGNED_BYTE, wallTop);
-					if (((v >> 1) & 1UL) == 0 && y + 2.5 < y1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallBottom), GL_UNSIGNED_BYTE, wallBottom);
-					if (((v >> 2) & 1UL) == 0 && z > z1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallZp), GL_UNSIGNED_BYTE, wallZp);
-					if (((v >> 3) & 1UL) == 0 && z < z1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallZm), GL_UNSIGNED_BYTE, wallZm);
-					if (((v >> 4) & 1UL) == 0 && x < x1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallXm), GL_UNSIGNED_BYTE, wallXm);
-					if (((v >> 5) & 1UL) == 0 && x > x1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallXp), GL_UNSIGNED_BYTE, wallXp);
-
-					glTranslatef(-x1, -y1, -z1);
-				}
-			}
-		}
-	}
+	textures->TexturesDisplay(x, y, z);
 
 	// Rysowanie ramki śledzonego bloku.
 	DrawCubeBorder();
@@ -558,6 +257,7 @@ void Game::GameMouseMove(int x1, int y1) {
 }
 
 bool Game::Collision(float x, float y, float z) {
+	int edgeDistance = 40;
 	int x1, x2, y1, z1, z2;
 	float space = 0.4;
 	x1 = (int)(x + space);
@@ -565,125 +265,20 @@ bool Game::Collision(float x, float y, float z) {
 	y1 = (int)(y);
 	z1 = (int)(z + space);
 	z2 = (int)(z - space);
-	if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z1) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z2) == 0)
+	if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z1) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z2) == 0
+		&& x1 > edgeDistance && x1<map->getX() - edgeDistance && z1> edgeDistance && z1 < map->getZ() - edgeDistance)
 		return false;
 	else
 		return true;
 }
 
-void Game::ComputeSun() {
-	sunTimer += 0.05;
+void Game::GameTimer() {
+	ambient->ComputeSun();
+	ComputeFall();
 
-	if (sunTimer < 0 || sunTimer > 360)
-		sunTimer = 0;
+	ComputeMove();
 
-
-	if (sunTimer <= 75) {
-		sunPosition = sunTimer;
-		skyColor[0] = 0;
-		skyColor[1] = 0.6;
-		skyColor[2] = 1;
-		
-		GLfloat ambient2[] = { 2,2,2, 1.0 };
-		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-		GLfloat diffuse2[] = { 0.4, 0.4, 0.4, 1.0 };
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-
-	}
-	else if (sunTimer <= 120) {
-		sunPosition = 75;
-
-		float delta1 = (1 - pow(((sunTimer - 75) / 45), 2));
-		float delta2 = (1 - pow(((sunTimer - 75) / 45), 1.5));
-		float delta3 = (1 - pow(((sunTimer - 75) / 45), 1));
-
-		skyColor[0] = delta3 - 1.0;
-		skyColor[1] = delta3 - 0.4;
-		skyColor[2] = delta3;
-
-		GLfloat ambient2[] = { delta1 * 2, delta2 * 2, delta3 * 2, 1.0 };
-		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-
-		delta1 -= 0.54;
-		delta2 -= 0.54;
-		delta3 -= 0.54;
-		if (delta1 < 0.06)
-			delta1 = 0.06;
-		if (delta2 < 0.06)
-			delta2 = 0.06;
-		if (delta3 < 0.06)
-			delta3 = 0.06;
-
-		GLfloat diffuse2[] = { delta1, delta2, delta3, 1.0 };
-		for (int i = 0;i < 3;i++)
-			if (diffuse2[i] < 0)
-				diffuse2[i] = 0;
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-
-	}
-	else if (sunTimer <= 180) {
-		sunPosition = 75;
-		skyColor[0] = 0;
-		skyColor[1] = 0;
-		skyColor[2] = 0;
-
-		GLfloat ambient2[] = { 0.0, 0.0, 0.0, 1.0 };
-		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-		GLfloat diffuse2[] = { 0.06, 0.06, 0.06, 1.0 };
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-	}
-	else if (sunTimer <= 240) {
-		sunPosition = 285;
-		skyColor[0] = 0;
-		skyColor[1] = 0;
-		skyColor[2] = 0;
-
-		GLfloat ambient2[] = { 0.0, 0.0, 0.0, 1.0 };
-		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-		GLfloat diffuse2[] = { 0.06, 0.06, 0.06, 1.0 };
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-	}
-	else if (sunTimer <= 285) {
-		sunPosition = 285;
-
-		float delta1 = pow(((sunTimer - 240) / 45), 1);
-		float delta2 = pow(((sunTimer - 240) / 45), 1.5);
-		float delta3 = pow(((sunTimer - 240) / 45), 2);
-
-		skyColor[0] = delta3 - 1.0;
-		skyColor[1] = delta3 - 0.4;
-		skyColor[2] = delta3;
-
-		GLfloat ambient2[] = { delta1 * 2, delta2 * 2, delta3 * 2, 1.0 };
-		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-
-		delta1 -= 0.54;
-		delta2 -= 0.54;
-		delta3 -= 0.54;
-		if (delta1 < 0.06)
-			delta1 = 0.06;
-		if (delta2 < 0.06)
-			delta2 = 0.06;
-		if (delta3 < 0.06)
-			delta3 = 0.06;
-
-		GLfloat diffuse2[] = { delta1, delta2, delta3, 1.0 };
-		for (int i = 0;i < 3;i++)
-			if (diffuse2[i] < 0)
-				diffuse2[i] = 0;
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-	}
-	else if (sunTimer <= 360) {
-		sunPosition = sunTimer;
-		skyColor[0] = 0;
-		skyColor[1] = 0.6;
-		skyColor[2] = 1;
-
-		GLfloat ambient2[] = { 2.0, 2.0, 2.0, 1.0 };
-		glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2);
-		GLfloat diffuse2[] = { 0.4, 0.4, 0.4, 1.0 };
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2);
-	}
+	ComputeTracking();
 }
 
 void Game::ComputeFall() {

@@ -1,6 +1,11 @@
 #ifndef Map_h
 #define Map_h
 
+#include <iostream>
+#include <stdlib.h>
+
+using namespace std;
+
 class Map
 {
 private:
