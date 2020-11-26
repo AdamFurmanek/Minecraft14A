@@ -31,7 +31,9 @@ void Window::Init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	glutCreateWindow("Minecraft 14A");
 	// Pełna ekran okna programu.
 	if (fullscreen)
-		glutFullScreen();
+		glutEnterGameMode();
+		//glutFullScreen();
+
 	// Dołączenie funkcji generującej scenę 3D.
 	glutDisplayFunc(Display);
 	// Dołączenie funkcji wywoływanej przy zmianie rozmiaru okna
@@ -100,7 +102,7 @@ void Window::Timer(int parameter)
 
 	game->ComputeTracking();
 
-	glutTimerFunc(10, Timer, 1);
+	glutTimerFunc(15, Timer, 1);
 
 	glutPostRedisplay();
 }

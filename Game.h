@@ -31,6 +31,7 @@ class Game
 	static float fallingSpeed;
 	// Pole widzenia.
 	static int viewField;
+	static int viewDistance;
 	// Latarka.
 	static bool flashlight;
 
