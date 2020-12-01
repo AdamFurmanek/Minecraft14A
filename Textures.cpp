@@ -106,17 +106,16 @@ const float cube_texc[] = {
 
 Map* Textures::map = NULL;
 
-Textures::Textures(Map* map) {
+Textures::Textures(Map* map, float viewDistance) {
 
 	this->map = map;
+	this->viewDistance = viewDistance;
 
 	// Włączenie tabel i zdefiniowanie buforów:
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glNormalPointer(GL_FLOAT, 0, cube_norm);
-
-	glEnable(GL_TEXTURE_2D);
 
 	// Wygenerowanie 14 identyfikatorów dla tekstur:
 	glGenTextures(14, TextureID);
@@ -191,17 +190,16 @@ Textures::Textures(Map* map) {
 	glFrontFace(GL_CCW);
 	// Włączenie testu bufora głębokości.
 	glEnable(GL_DEPTH_TEST);
-
 }
 
 void Textures::TexturesDisplay(float x, float y, float z) {
 	glEnable(GL_LIGHTING);
-
+	glEnable(GL_TEXTURE_2D);
 	int x1, y1, z1;
 	char v;
-	for (x1 = x - 40;x1 < x + 40; x1++) {
+	for (x1 = x - viewDistance;x1 < x + viewDistance; x1++) {
 		for (y1 = 0;y1 < map->getY();y1++) {
-			for (z1 = z - 40;z1 < z + 40;z1++) {
+			for (z1 = z - viewDistance;z1 < z + viewDistance;z1++) {
 				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
 					glTranslatef(x1, y1, z1);
 					glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);

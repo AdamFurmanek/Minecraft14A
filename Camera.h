@@ -8,16 +8,20 @@
 class Camera
 {
 private:
-	float angleXZ;
 	float vector[3];
+	float angleXZ;
 	float deltaAngleXZ, deltaAngleY;
+
 public:
 
-	Camera();
+	Camera(float vectorX = 1, float vectorY = 0, float vectorZ = 1, float angleXZ = 0);
 	void Move(int x1, int y1);
 	void LookAt(float x, float y, float z);
 	float* getVector() {
 		return vector;
+	}
+	float getAngleXZ() {
+		return angleXZ;
 	}
 
 };

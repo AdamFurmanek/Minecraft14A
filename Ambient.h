@@ -8,13 +8,16 @@
 class Ambient
 {
 private:
-	float sunPosition = 0, sunTimer = 0;
+	float Time;
 	GLfloat skyColor[3] = { 0.0f, 0.6f, 1.0f };
 public:
-	Ambient();
-	void ComputeSun();
-	void AmbientDisplay(float x, float y, float z);
+	Ambient(float Timer = 0);
+	void ComputeAmbient(int viewDistance);
+	void AmbientDisplay(float x, float y, float z, int viewDistance);
 	void clearColor();
+	float getTime() {
+		return Time;
+	}
 };
 
 #endif

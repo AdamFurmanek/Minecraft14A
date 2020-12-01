@@ -1,12 +1,12 @@
 #include "Camera.h"
 
-Camera::Camera() {
-	angleXZ = 0.0f;
-	vector[0] = 1.0f;
-	vector[1] = 0.0f;
-	vector[2] = 1.0f;
-	deltaAngleXZ = 0.0f;
-	deltaAngleY = 0.0f;
+Camera::Camera(float vectorX, float vectorY, float vectorZ, float angleXZ) {
+	vector[0] = vectorX;
+	vector[1] = vectorY;
+	vector[2] = vectorZ;
+	this->angleXZ = angleXZ;
+	deltaAngleXZ = 0;
+	deltaAngleY = 0;
 }
 
 void Camera::LookAt(float x, float y, float z) {

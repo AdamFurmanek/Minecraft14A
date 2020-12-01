@@ -48,7 +48,6 @@ void Window::Init(int argc, char* argv[], int w, int h, bool fullscreen) {
 	glutKeyboardUpFunc(ReleaseKey);
 	// Funkcja blokuje wykonywanie powtarzającyh wciśnień.
 	glutIgnoreKeyRepeat(1);
-	// Ukrycie kursora.
 	
 	//GameInit();
 	game->GameInit();

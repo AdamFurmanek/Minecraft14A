@@ -2,17 +2,22 @@
 
 Map* Player::map = NULL;
 
-Player::Player(Map* map) {
+Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed, bool flashlight, float viewField) {
 	this->map = map;
-	x = 100.0f;
-	y = 20.0f;
-	z = 100.0f;
+	this->x = x;
+	this->y = y;
+	this->z = z;
+	this->jump = jump;
+	this->fallingSpeed = fallingSpeed;
+	this->flashlight = flashlight;
+	this->viewField = viewField;
+
+	if(flashlight)
+		glEnable(GL_LIGHT1);
+
 
 	deltaMoveStraight = 0.0f;
 	deltaMoveSides = 0.0f;
-	jump = 0;
-	fallingSpeed = 0.1f;
-	flashlight = false;
 
 	GLfloat ambient1[] = { 0, 0, 0, 1.0 };
 	GLfloat diffuse1[] = { 1.0, 0.9, 0.7, 1.0 };
@@ -188,7 +193,6 @@ void Player::ComputeMove(float x1, float z1) {
 }
 
 bool Player::Collision(float x, float y, float z) {
-	int edgeDistance = 50;
 	int x1, x2, y1, z1, z2;
 	float space = 0.4;
 	x1 = (int)(x + space);
@@ -197,7 +201,7 @@ bool Player::Collision(float x, float y, float z) {
 	z1 = (int)(z + space);
 	z2 = (int)(z - space);
 	if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z1) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z2) == 0
-		&& x1 > edgeDistance && x1<map->getX() - edgeDistance && z1> edgeDistance && z1 < map->getZ() - edgeDistance)
+		&& x1 > 50 && x1<map->getX() - 49 && z1> 50 && z1 < map->getZ() - 49)
 		return false;
 	else
 		return true;
@@ -207,4 +211,17 @@ void Player::Flashlight(float vector[]) {
 	GLfloat position1[] = { x, y + 2.5, z, 1.0 };
 	glLightfv(GL_LIGHT1, GL_POSITION, position1);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, vector);
+}
+
+void Player::DrawCursor() {
+	glLineWidth(2);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
+	glColor3f(1, 1, 1);
+	glBegin(GL_LINES);
+	glVertex3f(-0.002, 0, -0.1);
+	glVertex3f(0.002, 0, -0.1);
+	glVertex3f(0, -0.002, -0.1);
+	glVertex3f(0, 0.002, -0.1);
+	glEnd();
 }

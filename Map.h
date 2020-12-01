@@ -9,14 +9,16 @@ using namespace std;
 class Map
 {
 private:
-	int x = 500;
-	int y = 64;
-	int z = 500;
+	int x;
+	int y;
+	int z;
 	//U¿yte zosta³y chary, poniewa¿ zajmuj¹ najmniej miejsca.
-	char map[500][64][500];
-	char visibilityMap[500][64][500];
+	char map[600][64][600];
+	char visibilityMap[600][64][600];
 public:
-	Map();
+	Map(bool generate = true);
+
+	void Generate();
 	void checkVisibility(int x1, int y1, int z1);
 	char get(int x2, int y2, int z2);
 	char getV(int x2, int y2, int z2);

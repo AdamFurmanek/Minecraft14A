@@ -3,14 +3,14 @@
 Map* Interaction::map = NULL;
 Player* Interaction::player = NULL;
 
-Interaction::Interaction(Map* map, Player* player) {
+Interaction::Interaction(Map* map, Player* player, int handID) {
 	this->map = map;
 	this->player = player;
 	followedX = 0;
 	followedY = 0;
 	followedZ = 0;
 	followedWall = 0;
-	handID = 1;
+	this->handID = handID;
 	handMax = 13;
 }
 
@@ -18,7 +18,7 @@ void Interaction::Mouse(int button, int state, int x, int y) {
 	if (state == GLUT_DOWN)
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			if (followedWall != 0)
+			if (followedWall != 0 && followedY > 0)
 				map->set(0, followedX, followedY, followedZ);
 			break;
 		case GLUT_RIGHT_BUTTON:
@@ -83,7 +83,7 @@ void Interaction::ComputeTracking(float x, float y, float z, float vector[3]) {
 		x2 = (int)(x1);
 		y2 = (int)(y1);
 		z2 = (int)(z1);
-		if (y2 > y + 6 || y2 < y - 3)
+		if (y2 > y + 6 || y2 < y - 3 || x2<51 || z2<51 || x2 > map->getX() - 48 || z2 > map->getX() - 48)
 			break;
 		if (map->get(x2, y2, z2) > 0) {
 			//cout << x << "   " << y << "   " << z << endl;
@@ -133,7 +133,9 @@ void Interaction::DrawCubeBorder() {
 	// Gruboœæ rysowania linii.
 	glLineWidth(3);
 	glDisable(GL_LIGHTING);
-	glColor3f(1, 1, 1);
+	glDisable(GL_TEXTURE_2D);
+
+	glColor3f(10, 10, 10);
 	glTranslatef(followedX + 0.5, followedY + 0.5, followedZ + 0.5);
 	glutWireCube(1.005);
 	glTranslatef(-followedX - 0.5, -followedY - 0.5, -followedZ - 0.5);

@@ -1,14 +1,5 @@
 ﻿#include "Game.h"
-
-Map* Game::map = NULL;
-Ambient* Game::ambient = NULL;
-Textures* Game::textures = NULL;
-Camera* Game::camera = NULL;
-Player* Game::player = NULL;
-Interaction* Game::interaction = NULL;
-
-int Game::viewField = 60;
-int Game::viewDistance = 40;
+#include<fstream>
 
 int frame;
 long time, timebase;
@@ -16,13 +7,9 @@ char s[50];
 
 void Game::GameInit() {
 
-	map = new Map();
-	ambient = new Ambient();
-	textures = new Textures(map);
-	camera = new Camera();
-	player = new Player(map);
-	interaction = new Interaction(map, player);
-
+	//CreateGame();
+	//SaveGame();
+	LoadGame();
 }
 
 void Game::GameDisplay() {
@@ -47,13 +34,13 @@ void Game::GameDisplay() {
 	// Macierz jednostkowa.
 	glLoadIdentity();
 	// Rysowanie celownika.
-	DrawCursor();
+	player->DrawCursor();
 
 	camera->LookAt(player->getX(), player->getY(), player->getZ());
 
 	player->Flashlight(camera->getVector());
 
-	ambient->AmbientDisplay(player->getX(), player->getY(), player->getZ());
+	ambient->AmbientDisplay(player->getX(), player->getY(), player->getZ(), textures->getViewDistance());
 
 	textures->TexturesDisplay(player->getX(), player->getY(), player->getZ());
 
@@ -66,12 +53,80 @@ void Game::GameDisplay() {
 
 }
 
-void Game::LoadGame() {
+void Game::SaveGame() {
+	ofstream plik("save.sav", ios::binary);
+	char m;
+	for (int i = 0; i < 600; i++) {
+		for (int j = 0; j < 64; j++) {
+			for (int k = 0;k < 600;k++) {
+				m = map->get(i, j, k);
+				plik.write((const char*)&m, sizeof(char));
+			}
+		}
+	}
+	plik << "\n";
+	plik << ambient->getTime() << "\n";
+	plik << textures->getViewDistance() << "\n";
+	plik << camera->getVector()[0] << "\n" << camera->getVector()[1] << "\n" << camera->getVector()[2] << "\n" << camera->getAngleXZ() << "\n";
+	plik << player->getX() << "\n" << player->getY() << "\n" << player->getZ() << "\n" << player->getJump() << "\n" << player->getFallingSpeed() << "\n" << player->getFlashlight() << "\n" << player->getViewField() << "\n";
+	plik << interaction->getHandID() << "\n";
+	plik.close();
 
 }
 
-void Game::CreateGame() {
+void Game::LoadGame() {
 
+	ifstream plik("save.sav", ios::binary);
+	map = new Map(false);
+	char m;
+	for (int i = 0; i < 600; i++) {
+		for (int j = 0; j < 64; j++) {
+			for (int k = 0;k < 600;k++) {
+				plik.read((char*)&m, sizeof(char));
+				map->set(m, i, j, k);
+			}
+		}
+	}
+	float time;
+	plik >> time;
+	ambient = new Ambient(time);
+	float viewDistance;
+	plik >> viewDistance;
+	textures = new Textures(map, viewDistance);
+	float x, y, z;
+	float angleXZ;
+	plik >> x;
+	plik >> y;
+	plik >> z;
+	plik >> angleXZ;
+	camera = new Camera(x,y,z, angleXZ);
+	int jump;
+	float fallingSpeed;
+	bool flashlight;
+	float viewField;
+	plik >> x;
+	plik >> y;
+	plik >> z;
+	plik >> jump;
+	plik >> fallingSpeed;
+	plik >> flashlight;
+	cout << flashlight << endl;
+	plik >> viewField;
+	player = new Player(map, x, y, z, jump, fallingSpeed, flashlight, viewField);
+	int handID;
+	plik >> handID;
+	interaction = new Interaction(map, player, handID);
+
+	plik.close();
+}
+
+void Game::CreateGame() {
+	map = new Map();
+	ambient = new Ambient();
+	textures = new Textures(map);
+	camera = new Camera();
+	player = new Player(map);
+	interaction = new Interaction(map, player);
 }
 
 void Game::GameReshape(int w, int h) {
@@ -86,7 +141,7 @@ void Game::GameReshape(int w, int h) {
 	glViewport(0, 0, w, h);
 
 	// Set the correct perspective.
-	gluPerspective(viewField, (w * 1.0 / h), 0.01, 64);
+	gluPerspective(player->getViewField(), (w * 1.0 / h), 0.01, 64);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -94,7 +149,8 @@ void Game::GameReshape(int w, int h) {
 }
 
 void Game::GamePressKey(unsigned char key, int xx, int yy) {
-
+	if (key == 'p')
+		SaveGame();
 	player->PressKey(key, xx, yy);
 }
 
@@ -115,24 +171,11 @@ void Game::GameMouseMove(int x1, int y1) {
 }
 
 void Game::GameTimer() {
-	ambient->ComputeSun();
+	ambient->ComputeAmbient(textures->getViewDistance());
 
 	player->ComputeFall();
 
 	player->ComputeMove(camera->getVector()[0], camera->getVector()[2]);
 
 	interaction->ComputeTracking(player->getX(), player->getY(), player->getZ(), camera->getVector());
-}
-
-void Game::DrawCursor() {
-	// Grubość rysowania linii.
-	glLineWidth(3);
-	glDisable(GL_LIGHTING);
-	glColor3f(1,1,1);
-	glBegin(GL_LINES);
-	glVertex3f(-0.002, 0, -0.1);
-	glVertex3f(0.002, 0, -0.1);
-	glVertex3f(0, -0.002, -0.1);
-	glVertex3f(0, 0.002, -0.1);
-	glEnd();
 }

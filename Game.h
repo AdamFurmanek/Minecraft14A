@@ -16,34 +16,28 @@ using namespace std;
 
 class Game
 {
-
-
 	public:
-		// Pole widzenia.
-		static int viewField;
-		static int viewDistance;
 
-		static Map* map;
-		static Ambient* ambient;
-		static Textures* textures;
-		static Camera* camera;
-		static Player* player;
-		static Interaction* interaction;
+		Map* map;
+		Ambient* ambient;
+		Textures* textures;
+		Camera* camera;
+		Player* player;
+		Interaction* interaction;
 
-	static void GameInit();
-	static void GameDisplay();
-	static void GameReshape(int w, int h);
-	static void GamePressKey(unsigned char key, int xx, int yy);
-	static void GameReleaseKey(unsigned char key, int x, int y);
-	static void GameMouse(int button, int state, int x, int y);
-	static void GameMouseMove(int x1, int y1);
+	void GameInit();
+	void GameDisplay();
+	void GameReshape(int w, int h);
+	void GamePressKey(unsigned char key, int xx, int yy);
+	void GameReleaseKey(unsigned char key, int x, int y);
+	void GameMouse(int button, int state, int x, int y);
+	void GameMouseMove(int x1, int y1);
+	void GameTimer();
 
-	static void LoadGame();
-	static void CreateGame();
+	void SaveGame();
+	void LoadGame();
+	void CreateGame();
 
-	static void DrawCursor();
-
-	static void GameTimer();
 };
 
 #endif

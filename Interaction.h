@@ -17,11 +17,14 @@ private:
 	int handID, handMax;
 
 public:
-	Interaction(Map* map, Player* player);
+	Interaction(Map* map, Player* player, int handID = 1);
 	void Mouse(int button, int state, int x, int y);
 	void ComputeTracking(float x, float y, float z, float vector[3]);
 	void Wall(float x1, float y1, float z1);
 	void DrawCubeBorder();
+	int getHandID() {
+		return handID;
+	}
 };
 
 #endif

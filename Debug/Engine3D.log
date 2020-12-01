@@ -1,9 +1,1 @@
-﻿  Game.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(88,17): error C2065: 'viewField': undeclared identifier
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(132,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(133,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(134,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(135,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-  Window.cpp
-  main.cpp
-  Generating Code...
+﻿

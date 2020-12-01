@@ -1,6 +1,24 @@
 #include "Map.h"
 
-Map::Map() {
+Map::Map(bool generate) {
+
+	x = 600;
+	y = 64;
+	z = 600;
+
+	if(generate)
+		Generate();
+	
+	for (int x = 0;x < getX();x++) {
+		for (int y = 0;y < getY();y++) {
+			for (int z = 0;z < getZ();z++) {
+				checkVisibility(x, y, z);
+			}
+		}
+	}
+}
+
+void Map::Generate() {
 
 	srand(NULL);
 
@@ -23,19 +41,21 @@ Map::Map() {
 			map[x][7][z] = 3;
 			map[x][7][z] = 3;
 			map[x][8][z] = 4;
-			map[x][10][z] = (rand() % 10) > 7 ? 10 : 0;
+			map[x][10][z] = (rand() % 10) > 7 ? 12 : 0;
 		}
 	}
+
 	for (int x = 0;x < getX();x++) {
-		for (int y = 0;y < getY();y++) {
+		for (int y = 0;y < getY()/4;y++) {
 			for (int z = 0;z < getZ();z++) {
-				checkVisibility(x, y, z);
+				if ((x == 50 || x == getX() - 50 )&&( z > 50 && z < getZ() - 50)  || (z == 50 || z == getZ() - 50) && (x > 50 && x < getX() - 50)) {
+					char id = map[x][y][z];
+					map[x][y][z] = (rand() % 10) > 4 ? 1 : id;
+				}
 			}
 		}
 	}
-	cout << (int)visibilityMap[0][0][0] << endl;
-	cout << (int)visibilityMap[1][1][1] << endl;
-	cout << (int)visibilityMap[20][20][20] << endl;
+
 }
 
 void Map::checkVisibility(int x1, int y1, int z1) {
