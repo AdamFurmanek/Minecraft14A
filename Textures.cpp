@@ -223,3 +223,18 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 		}
 	}
 }
+
+void Textures::DrawSelectedBlock(int id) {
+
+	double w = glutGet(GLUT_SCREEN_WIDTH);
+	double h = glutGet(GLUT_SCREEN_HEIGHT);
+	glDisable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
+	glScalef(0.05, 0.05, 0.05);
+	glTranslatef(w*0.005, -h*0.005, -12);
+		glBindTexture(GL_TEXTURE_2D, TextureID[id]);
+		glDrawElements(GL_TRIANGLES, sizeof(wallZp), GL_UNSIGNED_BYTE, wallZp);
+
+	glTranslatef(-w*0.005, h*0.005, 12);
+	glScalef(20, 20, 20);
+}

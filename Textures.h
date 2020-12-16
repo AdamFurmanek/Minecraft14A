@@ -3,6 +3,7 @@
 
 #include "Targa.h"
 #include "Map.h"
+#include <GL/glut.h>
 
 class Textures
 {
@@ -13,6 +14,7 @@ private:
 public:
 	Textures(Map* map, float viewDistance = 30);
 	void TexturesDisplay(float x, float y, float z);
+	void DrawSelectedBlock(int id);
 	int getViewDistance() {
 		return viewDistance;
 	}

@@ -83,7 +83,7 @@ void Interaction::ComputeTracking(float x, float y, float z, float vector[3]) {
 		x2 = (int)(x1);
 		y2 = (int)(y1);
 		z2 = (int)(z1);
-		if (y2 > y + 6 || y2 < y - 3 || x2<51 || z2<51 || x2 > map->getX() - 48 || z2 > map->getX() - 48)
+		if (y2 > y + 6 || y2 < y - 3 || x2<51 || z2<51 || x2 > map->getX() - 51 || z2 > map->getX() - 51)
 			break;
 		if (map->get(x2, y2, z2) > 0) {
 			//cout << x << "   " << y << "   " << z << endl;

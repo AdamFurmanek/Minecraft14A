@@ -5,9 +5,8 @@
 #include <stdlib.h>
 #include <GL/glut.h>
 #include <math.h>
-#include "Map.h"
 #include "Game.h"
-#include "Targa.h"
+#include "Menu.h"
 
 using namespace std;
 
@@ -19,11 +18,14 @@ private:
 	Window();
 	~Window();
 
+	static int state;
+
 	static Game* game;
+	static Menu* menu;
 
 	static void Display();
 	static void Reshape(int w, int h);
-	static void Mouse(int button, int state, int x, int y);
+	static void Mouse(int button, int state1, int x, int y);
 	static void PressKey(unsigned char key, int xx, int yy);
 	static void ReleaseKey(unsigned char key, int x, int y);
 	static void MouseMove(int x1, int y1);
@@ -32,7 +34,7 @@ private:
 public:
 
 	static Window* getInstance();
-	static void Init(int argc, char* argv[], int w, int h, bool fullscreen);
+	static void Init(int argc, char* argv[]);
 
 
 };

@@ -25,7 +25,6 @@ class Game
 		Player* player;
 		Interaction* interaction;
 
-	void GameInit();
 	void GameDisplay();
 	void GameReshape(int w, int h);
 	void GamePressKey(unsigned char key, int xx, int yy);

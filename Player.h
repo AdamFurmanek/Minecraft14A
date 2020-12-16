@@ -50,6 +50,9 @@ public:
 	float getViewField() {
 		return viewField;
 	}
+	void setViewField(float viewField) {
+		this -> viewField = viewField;
+	}
 };
 
 #endif

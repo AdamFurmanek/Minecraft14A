@@ -40,8 +40,6 @@ Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed
 void Player::PressKey(unsigned char key, int xx, int yy) {
 
 	switch (key) {
-	case'.' :
-		break;
 	case'f':
 		if (flashlight)
 			glDisable(GL_LIGHT1);
@@ -56,14 +54,12 @@ void Player::PressKey(unsigned char key, int xx, int yy) {
 	case 'q':
 		if (deltaMoveStraight == 0.12f) {
 			deltaMoveStraight += 0.07f;
+			viewField += 1.2;
 		}
 		break;
 	case ' ':
 		if (jump == 0)
 			jump = 20;
-		break;
-	case 27:
-		exit(0);
 		break;
 	}
 }
@@ -80,6 +76,8 @@ void Player::ReleaseKey(unsigned char key, int x, int y) {
 			deltaMoveSides = 0.0f;
 		break;
 	case 'w':
+		if (deltaMoveStraight > 0.15f)
+			viewField -= 1.2;
 		if (deltaMoveStraight > 0)
 			deltaMoveStraight = 0.0f;
 		break;

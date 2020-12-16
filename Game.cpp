@@ -5,13 +5,6 @@ int frame;
 long time, timebase;
 char s[50];
 
-void Game::GameInit() {
-
-	//CreateGame();
-	//SaveGame();
-	LoadGame();
-}
-
 void Game::GameDisplay() {
 
 	frame++;
@@ -29,12 +22,32 @@ void Game::GameDisplay() {
 	// Kolor tła.
 	ambient->clearColor();
 
-	// Wybór macierzy modelowania.
+	// Use the Projection Matrix
+	glMatrixMode(GL_PROJECTION);
+	// Reset Matrix
+	glLoadIdentity();
+	// Set the correct perspective.
+	gluPerspective(60, (glutGet(GLUT_WINDOW_WIDTH) * 1.0 / glutGet(GLUT_WINDOW_HEIGHT)), 0.01, 64);
+	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
 	// Macierz jednostkowa.
 	glLoadIdentity();
+
 	// Rysowanie celownika.
 	player->DrawCursor();
+	// Rysowanie trzymanego bloku.
+	textures->DrawSelectedBlock(interaction->getHandID());
+
+	// Use the Projection Matrix
+	glMatrixMode(GL_PROJECTION);
+	// Reset Matrix
+	glLoadIdentity();
+	// Set the correct perspective.
+	gluPerspective(player->getViewField(), (glutGet(GLUT_WINDOW_WIDTH) * 1.0 / glutGet(GLUT_WINDOW_HEIGHT)), 0.01, 64);
+	// Get Back to the Modelview
+	glMatrixMode(GL_MODELVIEW);
+	// Macierz jednostkowa.
+	glLoadIdentity();
 
 	camera->LookAt(player->getX(), player->getY(), player->getZ());
 
@@ -77,6 +90,11 @@ void Game::SaveGame() {
 void Game::LoadGame() {
 
 	ifstream plik("save.sav", ios::binary);
+	
+	if (!plik.is_open()) {
+		CreateGame();
+		return;
+	}
 	map = new Map(false);
 	char m;
 	for (int i = 0; i < 600; i++) {
@@ -149,9 +167,24 @@ void Game::GameReshape(int w, int h) {
 }
 
 void Game::GamePressKey(unsigned char key, int xx, int yy) {
-	if (key == 'p')
+
+	if (key == 27) {
+		glutSetCursor(GLUT_CURSOR_WAIT);
 		SaveGame();
-	player->PressKey(key, xx, yy);
+		exit(0);
+	}
+	else if (key == '9') {
+		if(player->getViewField()>35)
+			player->setViewField(player->getViewField() - 5);
+	}
+	else if (key == '0') {
+		if (player->getViewField() < 120)
+			player->setViewField(player->getViewField() + 5);
+	}
+	else {
+		player->PressKey(key, xx, yy);
+	}
+
 }
 
 void Game::GameReleaseKey(unsigned char key, int x, int y) {
