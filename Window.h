@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Menu.h"
 
+
 using namespace std;
 
 class Window
@@ -15,13 +16,9 @@ class Window
 private:
 
 	static Window* engine;
-	Window();
-	~Window();
-
-	static int state;
-
 	static Game* game;
 	static Menu* menu;
+	static int state;
 
 	static void Display();
 	static void Reshape(int w, int h);
@@ -35,7 +32,6 @@ public:
 
 	static Window* getInstance();
 	static void Init(int argc, char* argv[]);
-
 
 };
 

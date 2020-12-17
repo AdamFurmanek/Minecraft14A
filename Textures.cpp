@@ -111,12 +111,6 @@ Textures::Textures(Map* map, float viewDistance) {
 	this->map = map;
 	this->viewDistance = viewDistance;
 
-	// Włączenie tabel i zdefiniowanie buforów:
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, 0, cube_norm);
-
 	// Wygenerowanie 14 identyfikatorów dla tekstur:
 	glGenTextures(14, TextureID);
 	// Aktywacja trzech tekstur i ³adowanie ich z plików TGA:
@@ -177,19 +171,10 @@ Textures::Textures(Map* map, float viewDistance) {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-
-	// Przygotowanie szeœcianu:
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	// Tabela z punktami:
 	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
-	// Tabela ze wspó³rzêdnymi tekstur (2 wspó³rzêdne):
 	glTexCoordPointer(2, GL_FLOAT, 0, cube_texc);
-	// Face culling.
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	// Włączenie testu bufora głębokości.
-	glEnable(GL_DEPTH_TEST);
+	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
+	glNormalPointer(GL_FLOAT, 0, cube_norm);
 }
 
 void Textures::TexturesDisplay(float x, float y, float z) {
@@ -230,11 +215,11 @@ void Textures::DrawSelectedBlock(int id) {
 	double h = glutGet(GLUT_SCREEN_HEIGHT);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
-	glScalef(0.05, 0.05, 0.05);
+	glScalef(0.005, 0.005, 0.005);
 	glTranslatef(w*0.005, -h*0.005, -12);
 		glBindTexture(GL_TEXTURE_2D, TextureID[id]);
 		glDrawElements(GL_TRIANGLES, sizeof(wallZp), GL_UNSIGNED_BYTE, wallZp);
 
 	glTranslatef(-w*0.005, h*0.005, 12);
-	glScalef(20, 20, 20);
+	glScalef(200, 200, 200);
 }

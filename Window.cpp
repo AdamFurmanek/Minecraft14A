@@ -1,18 +1,9 @@
 ﻿#include "Window.h"
 
 Window* Window::engine = NULL;
-Game* Window::game = new Game();
+Game* Window::game = NULL;
 Menu* Window::menu = new Menu();
 int Window::state = 0;
-
-Window::Window()
-{
-
-}
-
-Window::~Window() {
-
-}
 
 Window* Window::getInstance() {
 	if (Window::engine == NULL)
@@ -47,6 +38,8 @@ void Window::Init(int argc, char* argv[]) {
 	glutKeyboardUpFunc(ReleaseKey);
 	// Funkcja blokuje wykonywanie powtarzającyh wciśnień.
 	glutIgnoreKeyRepeat(1);
+	// Inicjacja parametrów obiektu menu.
+	menu->InitMenu();
 	// Wywołanie funkcji timera.
 	glutTimerFunc(15, Timer, 1);
 	// Wprowadzenie programu do obsługi pętli komunikatów.
@@ -57,16 +50,23 @@ void Window::Display() {
 
 	if (state == 0)
 		menu->MenuDisplay();
-	else if(state == 1)
+	else if (state == 1)
+		menu->SavingMenuDisplay();
+	else if(state == 2)
 		game->GameDisplay();
-
+	else if(state == 3)
+		menu->SavingMenuDisplay();
 }
 
 void Window::Reshape(int w, int h) {
 	if (state == 0)
 		menu->MenuReshape(w,h);
 	else if (state == 1)
+		menu->MenuReshape(w, h);
+	else if (state == 2)
 		game->GameReshape(w,h);
+	else if (state == 3)
+		menu->MenuReshape(w, h);
 }
 
 void Window::PressKey(unsigned char key, int xx, int yy) {
@@ -74,61 +74,103 @@ void Window::PressKey(unsigned char key, int xx, int yy) {
 		glutPositionWindow(glutGet(GLUT_SCREEN_WIDTH) / 2 - 640, glutGet(GLUT_SCREEN_HEIGHT) / 2 - 360);
 		glutReshapeWindow(1280, 720);
 	}
-	
 	else if (key == '2') {
 		glutPositionWindow(glutGet(GLUT_SCREEN_WIDTH) / 2 - 800, glutGet(GLUT_SCREEN_HEIGHT) / 2 - 450);
 		glutReshapeWindow(1600, 900);
 	}
-
 	else if (key == '3') {
 		glutFullScreen();
 	}
-
+	else if (state == 0) {
+		if (key == 27)
+			exit(0);
+	}
 	else if (state == 1) {
-		game->GamePressKey(key, xx, yy);
+		if (key == 27)
+			state = 0;
+	}
+	else if (state == 2) {
+		if (key == 27) {
+			menu->InitMenu();
+			state = 0;
+			delete game;
+		}
+		else if (key == 'v') {
+			menu->InitMenu();
+			state = 3;
+		}
+		else {
+			game->GamePressKey(key, xx, yy);
+		}
+	}
+	else if (state == 3) {
+		if (key == 27) {
+			game->GameInit();
+			state = 2;
+		}
 	}
 }
 
 void Window::ReleaseKey(unsigned char key, int x, int y) {
-	if (state == 1)
+	if (state == 2)
 		game->GameReleaseKey(key, x, y);
 }
 
 void Window::Mouse(int button, int state1, int x, int y) {
-	
-	if (state == 0) {
-		if (menu->MenuMouse(button, state1, x, y) == 1) {
-			glutSetCursor(GLUT_CURSOR_WAIT);
-			state = 1;
-			game->CreateGame();
-			game->GameReshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	if (state1 == GLUT_DOWN) {
+		if (state == 0) {
+			if (menu->MenuMouse(x, y) == 1) {
+				glutSetCursor(GLUT_CURSOR_WAIT);
+				game = new Game();
+				game->CreateGame();
+				game->GameInit();
+				state = 2;
+			}
+			else if (menu->MenuMouse(x, y) == 2) {
+				state = 1;
+			}
 		}
-		else if (menu->MenuMouse(button, state1, x, y) == 2) {
-			glutSetCursor(GLUT_CURSOR_WAIT);
-			state = 1;
-			game->LoadGame();
-			game->GameReshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+		else if (state == 1) {
+			int id = menu->SavingMenuMouseChecked(x, y);
+			if (id != 0) {
+				glutSetCursor(GLUT_CURSOR_WAIT);
+				game = new Game();
+				game->LoadGame(id);
+				game->GameInit();
+				state = 2;
+			}
+		}
+		else if (state == 2) {
+			game->GameMouse(button, state1, x, y);
+		}
+		else if (state == 3) {
+			int id = menu->SavingMenuMouse(x, y);
+			if (id != 0) {
+				glutSetCursor(GLUT_CURSOR_WAIT);
+				game->SaveGame(id);
+				game->GameInit();
+				state = 2;
+			}
 		}
 	}
-	if (state == 1)
-		game->GameMouse(button, state1, x, y);
 }
 
 void Window::MouseMove(int x1, int y1) {
 	if (state == 0)
 		menu->MenuMouseMove(x1, y1);
 	else if (state == 1)
+		menu->SavingMenuMouseMove(x1, y1);
+	else if (state == 2)
 		game->GameMouseMove(x1, y1);
+	else if (state == 3)
+		menu->SavingMenuMouseMove(x1, y1);
 }
 
 void Window::Timer(int parameter)
 {
-	if (state == 0)
-		menu->MenuTimer();
-	else if (state == 1)
+	if (state == 2)
 		game->GameTimer();
 
 	glutTimerFunc(15, Timer, 1);
-
 	glutPostRedisplay();
 }

@@ -25,17 +25,18 @@ class Game
 		Player* player;
 		Interaction* interaction;
 
-	void GameDisplay();
-	void GameReshape(int w, int h);
-	void GamePressKey(unsigned char key, int xx, int yy);
-	void GameReleaseKey(unsigned char key, int x, int y);
-	void GameMouse(int button, int state, int x, int y);
-	void GameMouseMove(int x1, int y1);
-	void GameTimer();
-
-	void SaveGame();
-	void LoadGame();
-	void CreateGame();
+		~Game();
+		void GameInit();
+		void GameDisplay();
+		void GameReshape(int w, int h);
+		void GamePressKey(unsigned char key, int xx, int yy);
+		void GameReleaseKey(unsigned char key, int x, int y);
+		void GameMouse(int button, int state, int x, int y);
+		void GameMouseMove(int x1, int y1);
+		void GameTimer();
+		void SaveGame(int id);
+		void LoadGame(int id);
+		void CreateGame();
 
 };
 
