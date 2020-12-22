@@ -1,2 +1,25 @@
-﻿  Game.cpp
+﻿  Textures.cpp
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(112,23): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(167,15): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(168,16): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(173,28): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(173,24): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(173,20): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(190,30): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(190,25): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(190,20): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(196,14): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(197,15): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(198,16): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(200,27): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(200,23): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(200,19): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(217,29): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(217,24): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(217,19): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(231,30): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(232,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(232,16): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(236,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Textures.cpp(236,17): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
   Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\Engine3D\x64\Debug\Engine3D.exe

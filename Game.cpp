@@ -103,8 +103,24 @@ void Game::GamePressKey(unsigned char key, int xx, int yy) {
 			player->setViewField(player->getViewField() - 5);
 	}
 	else if (key == '0') {
-		if (player->getViewField() < 120)
+		if (player->getViewField() < 100)
 			player->setViewField(player->getViewField() + 5);
+	}
+	else if (key == '-') {
+		if (textures->getViewDistance() > 20)
+			textures->setViewDistance(textures->getViewDistance()-2);
+	}
+	else if (key == '=') {
+		if (textures->getViewDistance() < 60)
+			textures->setViewDistance(textures->getViewDistance() + 2);
+	}
+	else if (key == 'g') {
+		if (glIsEnabled(GL_FOG)) {
+			glDisable(GL_FOG);
+		}
+		else {
+			glEnable(GL_FOG);
+		}
 	}
 	else {
 		player->PressKey(key, xx, yy);

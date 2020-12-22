@@ -4,6 +4,7 @@
 #include "Targa.h"
 #include "Map.h"
 #include <GL/glut.h>
+#include <math.h>
 
 class Textures
 {
@@ -17,6 +18,9 @@ public:
 	void DrawSelectedBlock(int id);
 	int getViewDistance() {
 		return viewDistance;
+	}
+	void setViewDistance(int viewDistance) {
+		this->viewDistance = viewDistance;
 	}
 };
 

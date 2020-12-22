@@ -56,6 +56,8 @@ void Window::Display() {
 		game->GameDisplay();
 	else if(state == 3)
 		menu->SavingMenuDisplay();
+
+	glutPostRedisplay();
 }
 
 void Window::Reshape(int w, int h) {
@@ -117,8 +119,7 @@ void Window::ReleaseKey(unsigned char key, int x, int y) {
 }
 
 void Window::Mouse(int button, int state1, int x, int y) {
-	if (state1 == GLUT_DOWN) {
-		if (state == 0) {
+		if (state == 0 && state1 == GLUT_DOWN) {
 			if (menu->MenuMouse(x, y) == 1) {
 				glutSetCursor(GLUT_CURSOR_WAIT);
 				game = new Game();
@@ -130,7 +131,7 @@ void Window::Mouse(int button, int state1, int x, int y) {
 				state = 1;
 			}
 		}
-		else if (state == 1) {
+		else if (state == 1 && state1 == GLUT_DOWN) {
 			int id = menu->SavingMenuMouseChecked(x, y);
 			if (id != 0) {
 				glutSetCursor(GLUT_CURSOR_WAIT);
@@ -143,7 +144,7 @@ void Window::Mouse(int button, int state1, int x, int y) {
 		else if (state == 2) {
 			game->GameMouse(button, state1, x, y);
 		}
-		else if (state == 3) {
+		else if (state == 3 && state1 == GLUT_DOWN) {
 			int id = menu->SavingMenuMouse(x, y);
 			if (id != 0) {
 				glutSetCursor(GLUT_CURSOR_WAIT);
@@ -152,7 +153,6 @@ void Window::Mouse(int button, int state1, int x, int y) {
 				state = 2;
 			}
 		}
-	}
 }
 
 void Window::MouseMove(int x1, int y1) {
@@ -172,5 +172,4 @@ void Window::Timer(int parameter)
 		game->GameTimer();
 
 	glutTimerFunc(15, Timer, 1);
-	glutPostRedisplay();
 }

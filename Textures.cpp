@@ -116,60 +116,32 @@ Textures::Textures(Map* map, float viewDistance) {
 	// Aktywacja trzech tekstur i ³adowanie ich z plików TGA:
 	glBindTexture(GL_TEXTURE_2D, TextureID[0]);
 	LoadTGAMipmap(_strdup("nic"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[1]);
 	LoadTGAMipmap(_strdup("Textures//bedrock.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[2]);
 	LoadTGAMipmap(_strdup("Textures//stone.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[3]);
 	LoadTGAMipmap(_strdup("Textures//dirt.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[4]);
 	LoadTGAMipmap(_strdup("Textures//grass.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[5]);
 	LoadTGAMipmap(_strdup("Textures//sand.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[6]);
 	LoadTGAMipmap(_strdup("Textures//sandstone.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[7]);
 	LoadTGAMipmap(_strdup("Textures//tree.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[8]);
 	LoadTGAMipmap(_strdup("Textures//leaves.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[9]);
 	LoadTGAMipmap(_strdup("Textures//obsidian.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[10]);
 	LoadTGAMipmap(_strdup("Textures//smooth_stone.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[11]);
 	LoadTGAMipmap(_strdup("Textures//stone_bricks.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[12]);
 	LoadTGAMipmap(_strdup("Textures//purple_plate.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, TextureID[13]);
 	LoadTGAMipmap(_strdup("Textures//red_plate.tga"));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
 	glTexCoordPointer(2, GL_FLOAT, 0, cube_texc);
@@ -180,13 +152,53 @@ Textures::Textures(Map* map, float viewDistance) {
 void Textures::TexturesDisplay(float x, float y, float z) {
 	glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
+
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLdouble windowX, windowY, windowZ;
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
 	int x1, y1, z1;
 	char v;
-	for (x1 = x - viewDistance;x1 < x + viewDistance; x1++) {
-		for (y1 = 0;y1 < map->getY();y1++) {
+	for (y1 = 0;y1 < map->getY();y1++) {
+		for (x1 = x - viewDistance;x1 < x + viewDistance; x1++) {
 			for (z1 = z - viewDistance;z1 < z + viewDistance;z1++) {
+
+				gluProject(x1+0.5, y1, z1+0.5, modelview, projection, viewport, &windowX, &windowY, &windowZ);
+				if (windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1) {
+					if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
+						glTranslatef(x1, y1, z1);
+
+						glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
+
+						if (((v >> 0) & 1UL) == 0 && y + 2.5 > y1)
+							glDrawElements(GL_TRIANGLES, sizeof(wallTop), GL_UNSIGNED_BYTE, wallTop);
+						if (((v >> 1) & 1UL) == 0 && y + 2.5 < y1)
+							glDrawElements(GL_TRIANGLES, sizeof(wallBottom), GL_UNSIGNED_BYTE, wallBottom);
+						if (((v >> 2) & 1UL) == 0 && z > z1)
+							glDrawElements(GL_TRIANGLES, sizeof(wallZp), GL_UNSIGNED_BYTE, wallZp);
+						if (((v >> 3) & 1UL) == 0 && z < z1)
+							glDrawElements(GL_TRIANGLES, sizeof(wallZm), GL_UNSIGNED_BYTE, wallZm);
+						if (((v >> 4) & 1UL) == 0 && x < x1)
+							glDrawElements(GL_TRIANGLES, sizeof(wallXm), GL_UNSIGNED_BYTE, wallXm);
+						if (((v >> 5) & 1UL) == 0 && x > x1)
+							glDrawElements(GL_TRIANGLES, sizeof(wallXp), GL_UNSIGNED_BYTE, wallXp);
+
+						glTranslatef(-x1, -y1, -z1);
+					}
+				}
+			}
+		}
+	}
+	for (y1 = y - 3;y1 < y + 10;y1++) {
+		for (x1 = x - 3;x1 < x + 3; x1++) {
+			for (z1 = z - 3;z1 < z + 3;z1++) {
 				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
 					glTranslatef(x1, y1, z1);
+
 					glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
 
 					if (((v >> 0) & 1UL) == 0 && y + 2.5 > y1)
@@ -208,6 +220,7 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 		}
 	}
 }
+
 
 void Textures::DrawSelectedBlock(int id) {
 

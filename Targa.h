@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
+#include <GL/glut.h>
 
 typedef struct {
 	GLuint bpp;		// ilość bitów na piksel
