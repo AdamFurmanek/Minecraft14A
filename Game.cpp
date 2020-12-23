@@ -1,5 +1,4 @@
 ﻿#include "Game.h"
-#include<fstream>
 
 int frame;
 long time, timebase;
@@ -96,7 +95,7 @@ void Game::GameReshape(int w, int h) {
 
 }
 
-void Game::GamePressKey(unsigned char key, int xx, int yy) {
+void Game::GamePressKey(unsigned char key) {
 
 	if (key == '9') {
 		if(player->getViewField()>35)
@@ -123,14 +122,14 @@ void Game::GamePressKey(unsigned char key, int xx, int yy) {
 		}
 	}
 	else {
-		player->PressKey(key, xx, yy);
+		player->PressKey(key);
 	}
 
 }
 
-void Game::GameReleaseKey(unsigned char key, int x, int y) {
+void Game::GameReleaseKey(unsigned char key) {
 
-	player->ReleaseKey(key, x, y);
+	player->ReleaseKey(key);
 }
 
 void Game::GameMouse(int button, int state, int x, int y) {
@@ -141,7 +140,6 @@ void Game::GameMouse(int button, int state, int x, int y) {
 void Game::GameMouseMove(int x1, int y1) {
 
 	camera->Move(x1, y1);
-
 }
 
 void Game::GameTimer() {
@@ -195,10 +193,11 @@ void Game::LoadGame(int id) {
 		for (int j = 0; j < 64; j++) {
 			for (int k = 0;k < 600;k++) {
 				plik.read((char*)&m, sizeof(char));
-				map->set(m, i, j, k);
+				map->simpleSet(m, i, j, k);
 			}
 		}
 	}
+	map->checkFullVisibility();
 	float time;
 	plik >> time;
 	ambient = new Ambient(time);

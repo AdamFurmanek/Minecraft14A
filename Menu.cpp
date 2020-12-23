@@ -11,31 +11,6 @@ void Menu::InitMenu() {
     CheckSaves();
 }
 
-void Menu::RenderRectangle(float a1, float b1, float a2, float b2, const float color[3]) {
-    glLoadIdentity();
-    glBegin(GL_QUADS);
-        glColor3fv(color);
-        glVertex3f(a1, b1, 0.0);
-        glVertex3f(a1, b2, 0.0);
-        glVertex3f(a2, b2, 0.0);
-        glVertex3f(a2, b1, 0.0);
-    glEnd();
-}
-
-void Menu::RenderText(string text, float x, float y, float scale, const float colorB[3], const float colorF[3]) {
-    glLoadIdentity();
-    glColor3fv(colorB);
-    glTranslatef(x, y, 0);
-    glScalef(scale, scale, 1);
-    glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)text.c_str());
-
-    glLoadIdentity();
-    glColor3fv(colorF);
-    glTranslatef(x-0.008, y+0.008, 0);
-    glScalef(scale, scale, 1);
-    glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)text.c_str());
-}
-
 void Menu::MenuDisplay() {
 
     glMatrixMode(GL_MODELVIEW);
@@ -206,9 +181,34 @@ void Menu::SavingMenuMouseMove(int x, int y) {
         glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
 }
 
+void Menu::RenderRectangle(float a1, float b1, float a2, float b2, const float color[3]) {
+    glLoadIdentity();
+    glBegin(GL_QUADS);
+    glColor3fv(color);
+    glVertex3f(a1, b1, 0.0);
+    glVertex3f(a1, b2, 0.0);
+    glVertex3f(a2, b2, 0.0);
+    glVertex3f(a2, b1, 0.0);
+    glEnd();
+}
+
+void Menu::RenderText(std::string text, float x, float y, float scale, const float colorB[3], const float colorF[3]) {
+    glLoadIdentity();
+    glColor3fv(colorB);
+    glTranslatef(x, y, 0);
+    glScalef(scale, scale, 1);
+    glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)text.c_str());
+
+    glLoadIdentity();
+    glColor3fv(colorF);
+    glTranslatef(x - 0.008, y + 0.008, 0);
+    glScalef(scale, scale, 1);
+    glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)text.c_str());
+}
+
 void Menu::CheckSaves() {
     for (int i = 0; i < 8; i++) {
-        string name = "save1.sav";
+        std::string name = "save1.sav";
         name[4] = (i + 49);
         struct stat buffer;
         if (stat(name.c_str(), &buffer) == 0)

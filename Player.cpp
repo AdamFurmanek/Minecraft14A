@@ -37,7 +37,7 @@ Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
 }
 
-void Player::PressKey(unsigned char key, int xx, int yy) {
+void Player::PressKey(unsigned char key) {
 
 	switch (key) {
 	case'f':
@@ -61,10 +61,17 @@ void Player::PressKey(unsigned char key, int xx, int yy) {
 		if (jump == 0)
 			jump = 20;
 		break;
+	case 'r':
+		x = 300;
+		y = 60;
+		z = 300;
+		fallingSpeed = 0;
+		jump = 0;
+		break;
 	}
 }
 
-void Player::ReleaseKey(unsigned char key, int x, int y) {
+void Player::ReleaseKey(unsigned char key) {
 
 	switch (key) {
 	case 'a':

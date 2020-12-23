@@ -1,8 +1,8 @@
 ﻿#include "Window.h"
 
 Window* Window::engine = NULL;
-Game* Window::game = NULL;
 Menu* Window::menu = new Menu();
+Game* Window::game = NULL;
 int Window::state = 0;
 
 Window* Window::getInstance() {
@@ -71,6 +71,54 @@ void Window::Reshape(int w, int h) {
 		menu->MenuReshape(w, h);
 }
 
+void Window::Mouse(int button, int state1, int x, int y) {
+	if (state == 0 && state1 == GLUT_DOWN) {
+		if (menu->MenuMouse(x, y) == 1) {
+			glutSetCursor(GLUT_CURSOR_WAIT);
+			game = new Game();
+			game->CreateGame();
+			game->GameInit();
+			state = 2;
+		}
+		else if (menu->MenuMouse(x, y) == 2) {
+			state = 1;
+		}
+	}
+	else if (state == 1 && state1 == GLUT_DOWN) {
+		int id = menu->SavingMenuMouseChecked(x, y);
+		if (id != 0) {
+			glutSetCursor(GLUT_CURSOR_WAIT);
+			game = new Game();
+			game->LoadGame(id);
+			game->GameInit();
+			state = 2;
+		}
+	}
+	else if (state == 2) {
+		game->GameMouse(button, state1, x, y);
+	}
+	else if (state == 3 && state1 == GLUT_DOWN) {
+		int id = menu->SavingMenuMouse(x, y);
+		if (id != 0) {
+			glutSetCursor(GLUT_CURSOR_WAIT);
+			game->SaveGame(id);
+			game->GameInit();
+			state = 2;
+		}
+	}
+}
+
+void Window::MouseMove(int x1, int y1) {
+	if (state == 0)
+		menu->MenuMouseMove(x1, y1);
+	else if (state == 1)
+		menu->SavingMenuMouseMove(x1, y1);
+	else if (state == 2)
+		game->GameMouseMove(x1, y1);
+	else if (state == 3)
+		menu->SavingMenuMouseMove(x1, y1);
+}
+
 void Window::PressKey(unsigned char key, int xx, int yy) {
 	if (key == '1') {
 		glutPositionWindow(glutGet(GLUT_SCREEN_WIDTH) / 2 - 640, glutGet(GLUT_SCREEN_HEIGHT) / 2 - 360);
@@ -102,7 +150,7 @@ void Window::PressKey(unsigned char key, int xx, int yy) {
 			state = 3;
 		}
 		else {
-			game->GamePressKey(key, xx, yy);
+			game->GamePressKey(key);
 		}
 	}
 	else if (state == 3) {
@@ -113,57 +161,9 @@ void Window::PressKey(unsigned char key, int xx, int yy) {
 	}
 }
 
-void Window::ReleaseKey(unsigned char key, int x, int y) {
+void Window::ReleaseKey(unsigned char key, int xx, int yy) {
 	if (state == 2)
-		game->GameReleaseKey(key, x, y);
-}
-
-void Window::Mouse(int button, int state1, int x, int y) {
-		if (state == 0 && state1 == GLUT_DOWN) {
-			if (menu->MenuMouse(x, y) == 1) {
-				glutSetCursor(GLUT_CURSOR_WAIT);
-				game = new Game();
-				game->CreateGame();
-				game->GameInit();
-				state = 2;
-			}
-			else if (menu->MenuMouse(x, y) == 2) {
-				state = 1;
-			}
-		}
-		else if (state == 1 && state1 == GLUT_DOWN) {
-			int id = menu->SavingMenuMouseChecked(x, y);
-			if (id != 0) {
-				glutSetCursor(GLUT_CURSOR_WAIT);
-				game = new Game();
-				game->LoadGame(id);
-				game->GameInit();
-				state = 2;
-			}
-		}
-		else if (state == 2) {
-			game->GameMouse(button, state1, x, y);
-		}
-		else if (state == 3 && state1 == GLUT_DOWN) {
-			int id = menu->SavingMenuMouse(x, y);
-			if (id != 0) {
-				glutSetCursor(GLUT_CURSOR_WAIT);
-				game->SaveGame(id);
-				game->GameInit();
-				state = 2;
-			}
-		}
-}
-
-void Window::MouseMove(int x1, int y1) {
-	if (state == 0)
-		menu->MenuMouseMove(x1, y1);
-	else if (state == 1)
-		menu->SavingMenuMouseMove(x1, y1);
-	else if (state == 2)
-		game->GameMouseMove(x1, y1);
-	else if (state == 3)
-		menu->SavingMenuMouseMove(x1, y1);
+		game->GameReleaseKey(key);
 }
 
 void Window::Timer(int parameter)

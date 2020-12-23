@@ -6,15 +6,9 @@ Map::Map(bool generate) {
 	y = 64;
 	z = 600;
 
-	if(generate)
+	if(generate){
 		Generate();
-	
-	for (int x = 0;x < getX();x++) {
-		for (int y = 0;y < getY();y++) {
-			for (int z = 0;z < getZ();z++) {
-				checkVisibility(x, y, z);
-			}
-		}
+		checkFullVisibility();
 	}
 }
 
@@ -75,6 +69,16 @@ void Map::checkVisibility(int x1, int y1, int z1) {
 	visibilityMap[x1][y1][z1] = code;
 }
 
+void Map::checkFullVisibility() {
+	for (int x = 0;x < getX();x++) {
+		for (int y = 0;y < getY();y++) {
+			for (int z = 0;z < getZ();z++) {
+				checkVisibility(x, y, z);
+			}
+		}
+	}
+}
+
 char Map::get(int x2, int y2, int z2) {
 	if (x2<0 || y2<0 || z2<0 || x2>x - 1 || y2>y - 1 || z2>z - 1)
 		return -1;
@@ -117,4 +121,8 @@ void Map::set(char value, int x1, int y1, int z1) {
 		if (x1 + 1 < z)
 			visibilityMap[x1 + 1][y1][z1] |= 1UL << 4;
 	}
+}
+
+void Map::simpleSet(char value, int x1, int y1, int z1) {
+	map[x1][y1][z1] = value;
 }
