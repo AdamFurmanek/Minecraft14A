@@ -1,91 +1,11 @@
 ﻿  Game.cpp
-  Interaction.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(22,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(22,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(22,17): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(47,44): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(47,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(47,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(50,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(50,29): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(50,18): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(56,45): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(56,34): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(56,23): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(73,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(80,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(81,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(82,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(83,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(84,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(85,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(88,24): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(88,20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(88,16): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(107,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(108,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(109,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(139,59): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(139,42): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(139,25): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(141,62): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(141,44): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Interaction.cpp(141,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-  Player.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(23,44): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(30,50): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(32,49): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(57,20): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(87,20): warning C4305: '-=': truncation from 'double' to 'float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(157,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(202,19): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(216,31): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(216,31): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(227,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(228,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(229,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Player.cpp(230,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-  Window.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(4,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(5,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(7,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(8,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(10,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(11,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(13,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(14,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(16,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(17,52): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(19,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(20,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(22,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(23,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(25,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(26,51): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(28,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(29,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(31,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(32,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-  main.cpp
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(4,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(5,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(7,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(8,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(10,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(11,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(13,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(14,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(16,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(17,52): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(19,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(20,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(22,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(23,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(25,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(26,51): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(28,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(29,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(31,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Colors.h(32,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
-  Generating Code...
-  Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\Engine3D\x64\Debug\Engine3D.exe
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(4,6): error C2365: 'time': redefinition; previous definition was 'function'
+C:\Windows Kits\10\Include\10.0.18362.0\ucrt\time.h(532): message : see declaration of 'time'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(32,7): error C2659: '=': function as left operand
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(33,5): error C2296: '-': illegal, left operand has type 'time_t (__cdecl *)(time_t *const )'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(35,37): error C2296: '-': illegal, left operand has type 'time_t (__cdecl *)(time_t *const )'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(34,10): warning C4473: 'printf' : not enough arguments passed for format string
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(34,10): message : placeholders and their parameters expect 1 variadic arguments, but 0 were provided
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(34,10): message : the missing variadic argument 1 is required by format string '%4.2f'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(36,18): error C2440: '=': cannot convert from 'time_t (__cdecl *)(time_t *const )' to 'long'
+C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Game.cpp(36,14): message : There is no context in which this conversion is possible

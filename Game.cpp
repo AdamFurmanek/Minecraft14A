@@ -1,9 +1,5 @@
 ﻿#include "Game.h"
 
-int frame;
-long time, timebase;
-char s[50];
-
 Game::~Game() {
 	delete map;
 	delete ambient;
@@ -26,16 +22,6 @@ void Game::GameInit() {
 }
 
 void Game::GameDisplay() {
-
-	frame++;
-
-	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase > 1000) {
-		printf("Lighthouse3D - FPS:%4.2f\n",
-			frame * 1000.0 / (time - timebase));
-		timebase = time;
-		frame = 0;
-	}
 
 	// Czyszczenie bufora koloru i bufora głębi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
