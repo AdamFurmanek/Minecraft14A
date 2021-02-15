@@ -40,7 +40,7 @@ void Map::Generate() {
 	}
 
 	for (int x = 0;x < getX();x++) {
-		for (int y = 0;y < 30;y++) {
+		for (int y = 0;y < 64;y++) {
 			for (int z = 0;z < getZ();z++) {
 				if ((x == 50 || x == getX() - 50 )&&( z > 50 && z < getZ() - 50)  || (z == 50 || z == getZ() - 50) && (x > 50 && x < getX() - 50)) {
 					char id = map[x][y][z];

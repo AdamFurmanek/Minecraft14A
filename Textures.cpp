@@ -150,6 +150,8 @@ Textures::Textures(Map* map, float viewDistance) {
 }
 
 void Textures::TexturesDisplay(float x, float y, float z) {
+
+
 	glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
 
@@ -161,15 +163,16 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
+	clock_t start = clock();
+
 	int x1, y1, z1;
 	char v;
 	for (y1 = 0;y1 < map->getY();y1++) {
 		for (x1 = x - viewDistance;x1 < x + viewDistance; x1++) {
 			for (z1 = z - viewDistance;z1 < z + viewDistance;z1++) {
-
-				gluProject(x1+0.5, y1, z1+0.5, modelview, projection, viewport, &windowX, &windowY, &windowZ);
-				if (windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1) {
-					if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
+				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
+					gluProject(x1 + 0.5, y1, z1 + 0.5, modelview, projection, viewport, &windowX, &windowY, &windowZ);
+					if (windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1) {
 						glTranslatef(x1, y1, z1);
 
 						glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
@@ -193,6 +196,8 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 			}
 		}
 	}
+	printf("Czas wykonywania: %lu ms\n", clock() - start);
+
 	for (y1 = y - 3;y1 < y + 10;y1++) {
 		for (x1 = x - 3;x1 < x + 3; x1++) {
 			for (z1 = z - 3;z1 < z + 3;z1++) {
@@ -219,6 +224,7 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 			}
 		}
 	}
+
 }
 
 

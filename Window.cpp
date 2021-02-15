@@ -16,7 +16,7 @@ void Window::Init(int argc, char* argv[]) {
 	// Inicjalizacja biblioteki GLUT.
 	glutInit(&argc, argv);
 	// Inicjalizacja podwójnego bufora ramki i system kolorów RGB.
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_MULTISAMPLE);
 	// Rozmiary głównego okna programu.
 	glutInitWindowSize(1280, 720);
 	// Utworzenie głównego okna programu.

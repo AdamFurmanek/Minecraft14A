@@ -1,7 +1,28 @@
 ﻿  Game.cpp
+  Window.cpp
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(4,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(5,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(7,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(8,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(10,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(11,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(13,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(14,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(16,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(17,52): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(19,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(20,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(22,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(23,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(25,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(26,51): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(28,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(29,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(31,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(32,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
   Generating code
-  0 of 250 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  4 of 253 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    3 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\Engine3D\x64\Release\Engine3D.exe
+  Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\x64\Release\Engine3D.exe

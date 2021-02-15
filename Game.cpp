@@ -30,7 +30,7 @@ void Game::GameDisplay() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, (glutGet(GLUT_WINDOW_WIDTH) * 1.0 / glutGet(GLUT_WINDOW_HEIGHT)), 0.01, 64);
+	gluPerspective(60, (glutGet(GLUT_WINDOW_WIDTH) * 1.0 / glutGet(GLUT_WINDOW_HEIGHT)), 0.01, 1000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -41,7 +41,7 @@ void Game::GameDisplay() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(player->getViewField(), (glutGet(GLUT_WINDOW_WIDTH) * 1.0 / glutGet(GLUT_WINDOW_HEIGHT)), 0.01, 64);
+	gluPerspective(player->getViewField(), (glutGet(GLUT_WINDOW_WIDTH) * 1.0 / glutGet(GLUT_WINDOW_HEIGHT)), 0.01, 1000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -57,6 +57,7 @@ void Game::GameDisplay() {
 	interaction->DrawCubeBorder();
 	// Skierowanie poleceń do wykonania.
 	glFlush();
+
 	// Zamiana buforów koloru.
 	glutSwapBuffers();
 
@@ -74,7 +75,7 @@ void Game::GameReshape(int w, int h) {
 	glViewport(0, 0, w, h);
 
 	// Set the correct perspective.
-	gluPerspective(player->getViewField(), (w * 1.0 / h), 0.01, 64);
+	gluPerspective(player->getViewField(), (w * 1.0 / h), 0.01, 1000);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -96,7 +97,7 @@ void Game::GamePressKey(unsigned char key) {
 			textures->setViewDistance(textures->getViewDistance()-2);
 	}
 	else if (key == '=') {
-		if (textures->getViewDistance() < 60)
+		if (textures->getViewDistance() < 600)
 			textures->setViewDistance(textures->getViewDistance() + 2);
 	}
 	else if (key == 'g') {

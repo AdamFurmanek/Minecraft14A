@@ -10,7 +10,7 @@ Camera::Camera(float vectorX, float vectorY, float vectorZ, float angleXZ) {
 }
 
 void Camera::LookAt(float x, float y, float z) {
-	gluLookAt(x, y + 2.5, z, x + vector[0], y + vector[1] + 2.5, z + vector[2], 0.0f, 0.9f, 0.0f);
+	gluLookAt(x, y + 2.5, z, x + vector[0], y + vector[1] + 2.5, z + vector[2], 0.0f, 1.0f, 0.0f);
 }
 
 void Camera::Move(int x1, int y1) {
