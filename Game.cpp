@@ -26,8 +26,6 @@ void Game::GameDisplay() {
 
 	timer->Update();
 
-	cout << timer->getTime() << endl;
-
 	// Czyszczenie bufora koloru i bufora głębi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Kolor tła.

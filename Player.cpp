@@ -11,6 +11,7 @@ Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed
 	this->fallingSpeed = fallingSpeed;
 	this->flashlight = flashlight;
 	this->viewField = viewField;
+	autojump = false;
 
 	if(flashlight)
 		glEnable(GL_LIGHT1);
@@ -58,8 +59,10 @@ void Player::PressKey(unsigned char key) {
 		}
 		break;
 	case ' ':
-		if (jump == -1)
+		if (jump == -1 || autojump) {
+			autojump = false;
 			jump = 20;
+		}
 		break;
 	case 'r':
 		ResetPosition();
@@ -155,8 +158,11 @@ void Player::ComputeFall(long int deltaTime) {
 			jump = -1;
 			// Zresetowanie prêdkoœci spadania do podstawowej.
 			fallingSpeed = 0.1f;
+			autojump = false;
 		}
 	}
+	else
+		ResetPosition();
 }
 
 void Player::ComputeMove(float x1, float z1, long int deltaTime) {
@@ -171,8 +177,10 @@ void Player::ComputeMove(float x1, float z1, long int deltaTime) {
 				// Przypisanie nowej wartoœci do x.
 				x = newX;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if (jump == -1)
+			else if (jump == -1) {
 				jump = 13;
+				autojump = true;
+			}
 		// Obliczenie potencjalnie nowej wartoœci z.
 		float newZ = z + (deltaMoveStraight * z1 * deltaTime / 20);
 		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
@@ -182,8 +190,10 @@ void Player::ComputeMove(float x1, float z1, long int deltaTime) {
 				// Przypisanie nowej wartoœci z.
 				z = newZ;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if (jump == -1)
+			else if (jump == -1){
 				jump = 13;
+				autojump = true;
+			}
 
 	}
 	// Jeœli wykonano ruch na bok.
@@ -197,8 +207,10 @@ void Player::ComputeMove(float x1, float z1, long int deltaTime) {
 				// Przypisanie nowej wartoœci do x.
 				x = newX;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if (jump == -1)
-				jump = 14;
+			else if (jump == -1){
+				jump = 13;
+				autojump = true;
+			}
 		// Obliczenie potencjalnie nowej wartoœci z.
 		float newZ = z + (deltaMoveSides * x1 * deltaTime / 20);
 		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
@@ -208,8 +220,10 @@ void Player::ComputeMove(float x1, float z1, long int deltaTime) {
 				// Przypisanie nowej wartoœci z.
 				z = newZ;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if(jump == -1)
-				jump = 14;
+			else if(jump == -1){
+				jump = 13;
+				autojump = true;
+			}
 	}
 }
 

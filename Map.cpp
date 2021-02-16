@@ -60,7 +60,7 @@ void Map::Generate() {
 	for (int x = 0;x < getX();x++) {
 		for (int y = 0;y < getY() ;y++) {
 			for (int z = 0;z < getZ();z++) {
-				if ((x == borders-1 || x == getX() - borders)&&( z > borders && z < getZ() - borders)  || (z == borders-1 || z == getZ() - borders) && (x > borders && x < getX() - borders)) {
+				if ((x == borders-1 || x == getX() - borders)&&( z >= borders-1 && z <= getZ() - borders)  || (z == borders-1 || z == getZ() - borders) && (x >= borders && x <= getX() - borders)) {
 					char id = map[x][y][z];
 					map[x][y][z] = (rand() % 10) > 4 ? 1 : id;
 				}

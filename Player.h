@@ -22,6 +22,7 @@ private:
 	float fallingSpeed;
 	bool flashlight;
 	float viewField;
+	bool autojump;
 
 	float deltaMoveStraight, deltaMoveSides;
 public:
