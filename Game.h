@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Interaction.h"
+#include "Timer.h"
 
 /*! \class Game Game.h
  *  \brief Klasa bêd¹ca rozgrywk¹ gry.
@@ -28,6 +29,7 @@ public:
 	Camera* camera;
 	Player* player;
 	Interaction* interaction;
+	Timer* timer;
 
 	/*! \fn Game::~Game()
 	 *  \brief Destruktor usuwaj¹cy obiekt klasy Game.

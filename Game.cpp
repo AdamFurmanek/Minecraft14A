@@ -7,6 +7,7 @@ Game::~Game() {
 	delete camera;
 	delete player;
 	delete interaction;
+	delete timer;
 }
 
 void Game::GameInit() {
@@ -22,6 +23,10 @@ void Game::GameInit() {
 }
 
 void Game::GameDisplay() {
+
+	timer->Update();
+
+	cout << timer->getTime() << endl;
 
 	// Czyszczenie bufora koloru i bufora głębi.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -132,9 +137,9 @@ void Game::GameMouseMove(int x1, int y1) {
 void Game::GameTimer() {
 	ambient->ComputeAmbient(textures->getViewDistance());
 
-	player->ComputeFall();
+	player->ComputeFall(timer->getTime());
 
-	player->ComputeMove(camera->getVector()[0], camera->getVector()[2]);
+	player->ComputeMove(camera->getVector()[0], camera->getVector()[2], timer->getTime());
 
 	interaction->ComputeTracking(player->getX(), player->getY(), player->getZ(), camera->getVector());
 }
@@ -214,8 +219,8 @@ void Game::LoadGame(int id) {
 	int handID;
 	plik >> handID;
 	interaction = new Interaction(map, player, handID);
-
 	plik.close();
+	timer = new Timer();
 }
 
 void Game::CreateGame() {
@@ -226,5 +231,6 @@ void Game::CreateGame() {
 	player = new Player(map);
 	player->ResetPosition();
 	interaction = new Interaction(map, player);
+	timer = new Timer();
 	GameInit();
 }

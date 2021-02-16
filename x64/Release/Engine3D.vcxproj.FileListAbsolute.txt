@@ -1,2 +1,0 @@
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\x64\Release\Engine3D.exe
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\x64\Release\Engine3D.exe

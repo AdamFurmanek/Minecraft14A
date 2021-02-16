@@ -58,7 +58,7 @@ void Player::PressKey(unsigned char key) {
 		}
 		break;
 	case ' ':
-		if (jump == 0)
+		if (jump == -1)
 			jump = 20;
 		break;
 	case 'r':
@@ -91,14 +91,14 @@ void Player::ReleaseKey(unsigned char key) {
 	}
 }
 
-void Player::ComputeFall() {
-
+void Player::ComputeFall(long int deltaTime) {
+	cout << jump << endl;
 	// Jeœli wykonywany jest skok.
-	if (jump > 1) {
+	if (jump > 0) {
 		// Potencjalna zmiana wysokoœci y.
 		float deltaY;
 		// Zmiana wysokoœci jest dyktowana tym, w którym momencie lotu jest gracz.
-		switch (jump) {
+		switch ((int)jump) {
 		case 20: case 19: case 18: case 17: case 16:
 			deltaY = 0.15f;
 			break;
@@ -129,41 +129,41 @@ void Player::ComputeFall() {
 		}
 
 		// Sprawdzenie kolizji cia³a na wysokoœci g³owy z potencjalnie now¹ wartoœci¹ y.
-		if (!Collision(x, y + 2.7f + deltaY, z))
+		if (!Collision(x, y + 2.7f + deltaY * deltaTime / 16, z))
 			// Przypisanie nowej wartoœci y.
-			y += deltaY;
+			y += deltaY * deltaTime / 16;
 
 		// Zmniejszenie licznika d³ugoœci skoku.
-		jump -= 1;
+		jump -= 1 * deltaTime / 16;
 	}
 	// Grawitacja.
 	else if (y > 0) {
 
 		// Obliczenie potencjalnie nowej wartoœci y.
-		float newY = y - fallingSpeed;
+		float newY = y - fallingSpeed * deltaTime / 16;
 		// Sprawdzenie kolizji cia³a na wysokoœci butów z potencjalnie now¹ wartoœci¹ y.
 		if (!Collision(x, newY, z)) {
 			// Przypisanie nowej wartoœci y.
 			y = newY;
 			// Zwiêkszenie prêdkoœci spadania.
-			fallingSpeed += 0.006f;
+			fallingSpeed += 0.006f * deltaTime / 16;
 		}
 		else {
 			// Wyrównanie wysokoœci y do liczby ca³kowitej.
 			y = (int)(y);
 			// Zakoñczenie skoku. Pozwala wykonaæ nowy.
-			jump = 0;
+			jump = -1;
 			// Zresetowanie prêdkoœci spadania do podstawowej.
 			fallingSpeed = 0.1f;
 		}
 	}
 }
 
-void Player::ComputeMove(float x1, float z1) {
+void Player::ComputeMove(float x1, float z1, long int deltaTime) {
 	// Jeœli wykonano ruch w przód/ty³.
 	if (deltaMoveStraight) {
 		// Obliczenie potencjalnie nowej wartoœci x.
-		float newX = x + (deltaMoveStraight * x1);
+		float newX = x + (deltaMoveStraight * x1 * deltaTime/20);
 		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
 		if (!Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
 			// Sprawdzenie kolizji cia³a na wysokoœci butów.
@@ -171,10 +171,10 @@ void Player::ComputeMove(float x1, float z1) {
 				// Przypisanie nowej wartoœci do x.
 				x = newX;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if (jump == 0)
-				jump = 14;
+			else if (jump == -1)
+				jump = 13;
 		// Obliczenie potencjalnie nowej wartoœci z.
-		float newZ = z + (deltaMoveStraight * z1);
+		float newZ = z + (deltaMoveStraight * z1 * deltaTime / 20);
 		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
 		if (!Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
 			// Sprawdzenie kolizji cia³a na wysokoœci butów.
@@ -182,14 +182,14 @@ void Player::ComputeMove(float x1, float z1) {
 				// Przypisanie nowej wartoœci z.
 				z = newZ;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if (jump == 0)
-				jump = 14;
+			else if (jump == -1)
+				jump = 13;
 
 	}
 	// Jeœli wykonano ruch na bok.
 	if (deltaMoveSides) {
 		// Obliczenie potencjalnie nowej wartoœci x.
-		float newX = x + (deltaMoveSides * -z1);
+		float newX = x + (deltaMoveSides * -z1 * deltaTime / 20);
 		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
 		if (!Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
 			// Sprawdzenie kolizji cia³a na wysokoœci butów.
@@ -197,10 +197,10 @@ void Player::ComputeMove(float x1, float z1) {
 				// Przypisanie nowej wartoœci do x.
 				x = newX;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if (jump == 0)
+			else if (jump == -1)
 				jump = 14;
 		// Obliczenie potencjalnie nowej wartoœci z.
-		float newZ = z + (deltaMoveSides * x1);
+		float newZ = z + (deltaMoveSides * x1 * deltaTime / 20);
 		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
 		if (!Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
 			// Sprawdzenie kolizji cia³a na wysokoœci butów.
@@ -208,7 +208,7 @@ void Player::ComputeMove(float x1, float z1) {
 				// Przypisanie nowej wartoœci z.
 				z = newZ;
 			//Autoskok na wysokoœæ jednego bloku.
-			else if(jump==0)
+			else if(jump == -1)
 				jump = 14;
 	}
 }

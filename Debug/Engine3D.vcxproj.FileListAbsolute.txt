@@ -1,2 +1,0 @@
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Debug\Engine3D.exe
-C:\Dev\Microsoft Visual Studio\workspace\Engine3D\Debug\Engine3D.pdb

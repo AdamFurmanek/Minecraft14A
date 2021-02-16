@@ -18,7 +18,7 @@ class Player
 private:
 	static Map* map;
 	float x, y, z;
-	int jump;
+	float jump;
 	float fallingSpeed;
 	bool flashlight;
 	float viewField;
@@ -64,7 +64,7 @@ public:
 	 *	Jeœli gracz wykonuje skok, obliczana jest jego pozycja w górê (o ile nie zachodzi kolizja z czymœ ponad graczem [na wysokoœci 2.7]).
 	 *  Jeœli jump = 0, gracza opada ruchem przyœpieszonym, dopóki nie zetknie siê z jakimœ blokiem (sprawdzenie kolizji na wysokoœci 0).
 	 */
-	void ComputeFall();
+	void ComputeFall(long int deltaTime);
 
 	/*! \fn void Player::ComputeMove(float x1, float z1)
 	 *  \brief Oblicza poruszanie gracza w p³aszczyŸnie horyzontalnej.
@@ -74,7 +74,7 @@ public:
 	 *	Wykonuje ruch do przodu/do ty³u lub na poki.
 	 *  Sprawdza przed tym czy nie dojdzie do kolizji w trzech punktach (0, 1, 2). Ruch nie jest wykonany jeœli zasz³aby kolizja.
 	 */
-	void ComputeMove(float x1, float z1);
+	void ComputeMove(float x1, float z1, long int deltaTime);
 
 	/*! \fn bool Player::Collision(float x, float y, float z)
 	 *  \brief Sprawdza kolizjê.

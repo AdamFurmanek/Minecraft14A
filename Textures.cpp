@@ -163,8 +163,6 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
-	clock_t start = clock();
-
 	int x1, y1, z1;
 	char v;
 	for (y1 = 0;y1 < map->getY();y1++) {
@@ -196,7 +194,6 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 			}
 		}
 	}
-	printf("Czas wykonywania: %lu ms\n", clock() - start);
 
 	for (y1 = y - 3;y1 < y + 10;y1++) {
 		for (x1 = x - 3;x1 < x + 3; x1++) {
