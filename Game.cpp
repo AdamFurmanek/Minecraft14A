@@ -224,6 +224,7 @@ void Game::CreateGame() {
 	textures = new Textures(map);
 	camera = new Camera();
 	player = new Player(map);
+	player->ResetPosition();
 	interaction = new Interaction(map, player);
 	GameInit();
 }

@@ -26,7 +26,7 @@ public:
 	 *
 	 *	Konstruktor wczytuje kilkanaœcie tekstur formatu .tga i zaznacza odpowiednie tablice wierzcho³ków, œcian i wektorów normalnych.
 	 */
-	Textures(Map* map, float viewDistance = 30);
+	Textures(Map* map, float viewDistance = 60);
 
 	/*! \fn void Textures::TexturesDisplay(float x, float y, float z)
 	 *  \brief Metoda renderuj¹ca œwiat.

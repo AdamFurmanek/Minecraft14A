@@ -62,11 +62,7 @@ void Player::PressKey(unsigned char key) {
 			jump = 20;
 		break;
 	case 'r':
-		x = 300;
-		y = 60;
-		z = 300;
-		fallingSpeed = 0;
-		jump = 0;
+		ResetPosition();
 		break;
 	}
 }
@@ -168,32 +164,52 @@ void Player::ComputeMove(float x1, float z1) {
 	if (deltaMoveStraight) {
 		// Obliczenie potencjalnie nowej wartoœci x.
 		float newX = x + (deltaMoveStraight * x1);
-		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
-		if (!Collision(newX, y, z) && !Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
-			// Przypisanie nowej wartoœci do x.
-			x = newX;
+		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
+		if (!Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
+			// Sprawdzenie kolizji cia³a na wysokoœci butów.
+			if (!Collision(newX, y, z))
+				// Przypisanie nowej wartoœci do x.
+				x = newX;
+			//Autoskok na wysokoœæ jednego bloku.
+			else if (jump == 0)
+				jump = 14;
 		// Obliczenie potencjalnie nowej wartoœci z.
 		float newZ = z + (deltaMoveStraight * z1);
-		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
-		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
-			// Przypisanie nowej wartoœci z.
-			z = newZ;
+		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
+		if (!Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
+			// Sprawdzenie kolizji cia³a na wysokoœci butów.
+			if (!Collision(x, y, newZ))
+				// Przypisanie nowej wartoœci z.
+				z = newZ;
+			//Autoskok na wysokoœæ jednego bloku.
+			else if (jump == 0)
+				jump = 14;
 
 	}
 	// Jeœli wykonano ruch na bok.
 	if (deltaMoveSides) {
 		// Obliczenie potencjalnie nowej wartoœci x.
 		float newX = x + (deltaMoveSides * -z1);
-		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
-		if (!Collision(newX, y, z) && !Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
-			// Przypisanie nowej wartoœci do x.
-			x = newX;
+		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ x.
+		if (!Collision(newX, y + 1, z) && !Collision(newX, y + 2, z))
+			// Sprawdzenie kolizji cia³a na wysokoœci butów.
+			if (!Collision(newX, y, z))
+				// Przypisanie nowej wartoœci do x.
+				x = newX;
+			//Autoskok na wysokoœæ jednego bloku.
+			else if (jump == 0)
+				jump = 14;
 		// Obliczenie potencjalnie nowej wartoœci z.
 		float newZ = z + (deltaMoveSides * x1);
-		// Sprawdzenie kolizji cia³a na wysokoœci butów, pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
-		if (!Collision(x, y, newZ) && !Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
-			// Przypisanie nowej wartoœci z.
-			z = newZ;
+		// Sprawdzenie kolizji cia³a na wysokoœci pasa i g³owy z potencjalnie now¹ wartoœci¹ z.
+		if (!Collision(x, y + 1, newZ) && !Collision(x, y + 2, newZ))
+			// Sprawdzenie kolizji cia³a na wysokoœci butów.
+			if (!Collision(x, y, newZ))
+				// Przypisanie nowej wartoœci z.
+				z = newZ;
+			//Autoskok na wysokoœæ jednego bloku.
+			else if(jump==0)
+				jump = 14;
 	}
 }
 
@@ -206,7 +222,7 @@ bool Player::Collision(float x, float y, float z) {
 	z1 = (int)(z + space);
 	z2 = (int)(z - space);
 	if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z1) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z2) == 0
-		&& x1 > 50 && x1<map->getX() - 49 && z1> 50 && z1 < map->getZ() - 49)
+		&& x1 > map->getBorders()-1 && x1<map->getX() - map->getBorders()+1 && z1> map->getBorders()-1 && z1 < map->getZ() - map->getBorders()+1)
 		return false;
 	else
 		return true;
@@ -229,4 +245,12 @@ void Player::DrawCursor() {
 	glVertex3f(0, -0.002, -0.1);
 	glVertex3f(0, 0.002, -0.1);
 	glEnd();
+}
+
+void Player::ResetPosition() {
+	x = map->getX() /2;
+	y = map->getY();
+	z = map->getZ() /2;
+	fallingSpeed = 0;
+	jump = 0;
 }

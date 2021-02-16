@@ -2,9 +2,10 @@
 
 Map::Map(bool generate) {
 
-	x = 600;
+	x = 256;
 	y = 64;
-	z = 600;
+	z = 256;
+	borders = 10;
 
 	if(generate){
 		Generate();
@@ -23,26 +24,43 @@ void Map::Generate() {
 			}
 		}
 	}
-	for (int x = 0;x < getX();x++) {
-		for (int z = 0;z < getZ();z++) {
-			map[x][0][z] = 1;
-			map[x][1][z] = 2;
-			map[x][2][z] = 2;
-			map[x][3][z] = 2;
-			map[x][4][z] = 2;
-			map[x][5][z] = 3;
-			map[x][6][z] = 3;
-			map[x][7][z] = 3;
-			map[x][7][z] = 3;
-			map[x][8][z] = 4;
-			//map[x][10][z] = (rand() % 10) > 7 ? 12 : 0;
+
+	// Create and configure FastNoise object
+	FastNoiseLite noise;
+	noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+	// Gather noise data
+	float noiseData[256][256];
+
+	for (int y = 0; y < 256; y++) {
+		for (int x = 0; x < 256; x++) {
+			double nx = x / 256 - 0.5, ny = y / 256 - 0.5;
+			noiseData[y][x] = noise.GetNoise((float)x, (float)y);
+		}
+	}
+
+	for (int y = 0; y < 256; y++) {
+		for (int x = 0; x < 256; x++) {
+			int high = (int)(noiseData[y][x] * 10 + 20);
+			if(high>0)
+				map[y][high][x] = 4;
+			for (int k = 0;k < 3;k++) {
+				high--;
+				if (high > 0)
+					map[y][high][x] = 3;
+			}
+			while (high > 1) {
+				high--;
+				map[y][high][x] = 2;
+			}
+			map[y][0][x] = 1;
 		}
 	}
 
 	for (int x = 0;x < getX();x++) {
-		for (int y = 0;y < 64;y++) {
+		for (int y = 0;y < getY() ;y++) {
 			for (int z = 0;z < getZ();z++) {
-				if ((x == 50 || x == getX() - 50 )&&( z > 50 && z < getZ() - 50)  || (z == 50 || z == getZ() - 50) && (x > 50 && x < getX() - 50)) {
+				if ((x == borders-1 || x == getX() - borders)&&( z > borders && z < getZ() - borders)  || (z == borders-1 || z == getZ() - borders) && (x > borders && x < getX() - borders)) {
 					char id = map[x][y][z];
 					map[x][y][z] = (rand() % 10) > 4 ? 1 : id;
 				}

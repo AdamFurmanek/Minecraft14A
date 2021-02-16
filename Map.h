@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include "FastNoiseLite.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ private:
 	int x;
 	int y;
 	int z;
+	int borders;
 	char map[600][64][600];
 	char visibilityMap[600][64][600];
 public:
@@ -111,6 +113,10 @@ public:
 
 	int getZ() {
 		return z;
+	}
+
+	int getBorders() {
+		return borders;
 	}
 };
 

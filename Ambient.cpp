@@ -5,7 +5,7 @@ Ambient::Ambient(float Time) {
 	this->Time = Time;
 
 	glEnable(GL_LIGHT2);
-	glEnable(GL_FOG);
+	//glEnable(GL_FOG);
 	glHint(GL_FOG_HINT, GL_DONT_CARE);
 	glFogfv(GL_FOG_COLOR, skyColor);
 	glFogf(GL_FOG_DENSITY, 0.001);
