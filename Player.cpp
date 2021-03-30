@@ -16,7 +16,6 @@ Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed
 	if(flashlight)
 		glEnable(GL_LIGHT1);
 
-
 	deltaMoveStraight = 0.0f;
 	deltaMoveSides = 0.0f;
 
@@ -32,7 +31,7 @@ Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed
 	// Wygaszanie œwiat³a (liniowo)
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.01);
 	// Wygaszanie œwiat³a (kwadratowo)
-	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.1);
 
 	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 10.0);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
@@ -95,7 +94,6 @@ void Player::ReleaseKey(unsigned char key) {
 }
 
 void Player::ComputeFall(long int deltaTime) {
-	cout << jump << endl;
 	// Jeœli wykonywany jest skok.
 	if (jump > 0) {
 		// Potencjalna zmiana wysokoœci y.

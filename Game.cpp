@@ -12,6 +12,8 @@ Game::~Game() {
 
 void Game::GameInit() {
 
+
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_CULL_FACE);
@@ -19,6 +21,7 @@ void Game::GameInit() {
 	glEnable(GL_DEPTH_TEST);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
+	glutSetCursor(GLUT_CURSOR_NONE);
 	GameReshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 }
 

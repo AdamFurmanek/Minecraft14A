@@ -4,23 +4,25 @@
 #include <iostream>
 #include <stdlib.h>
 #include "FastNoiseLite.h"
+#include <time.h>
 
 using namespace std;
 
+#define constX 2048
+#define constY 128
+#define constZ 2048
+
 /*! \class Map Map.h
- *  \brief OPIS
+ *  \brief Klasa przechowuj¹ca dane mapy.
  *
- * OPIS
+ * Przechowuje X * Y * Z voxeli oraz informacjê, czy voxel jest pokryty dooko³a oraz generuje mapê.
  */
 class Map
 {
 private:
-	int x;
-	int y;
-	int z;
 	int borders;
-	char map[600][64][600];
-	char visibilityMap[600][64][600];
+	char map[constX][constY][constZ];
+	char visibilityMap[constX][constY][constZ];
 public:
 
 	/*! \fn Map::Map(bool generate = true)
@@ -104,15 +106,15 @@ public:
 	void simpleSet(char value, int x1, int y1, int z1);
 
 	int getX() {
-		return x;
+		return constX;
 	}
 
 	int getY() {
-		return y;
+		return constY;
 	}
 
 	int getZ() {
-		return z;
+		return constZ;
 	}
 
 	int getBorders() {

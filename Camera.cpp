@@ -14,7 +14,6 @@ void Camera::LookAt(float x, float y, float z) {
 }
 
 void Camera::Move(int x1, int y1) {
-	glutSetCursor(GLUT_CURSOR_NONE);
 	// Ustawienie kursor z powrotem na œrodek.
 	glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
 	// Obliczenie ruchu myszki i przypisanie do deltaAngleXZ i deltaAngleY.
@@ -26,6 +25,7 @@ void Camera::Move(int x1, int y1) {
 	vector[0] = sin(angleXZ);
 	vector[2] = -cos(angleXZ);
 
+	
 	if (deltaAngleY > 0)
 		deltaAngleY += vector[1] * vector[1] / 98;
 	else if (deltaAngleY < 0)
@@ -35,4 +35,5 @@ void Camera::Move(int x1, int y1) {
 		vector[1] = 7;
 	if (vector[1] < -7)
 		vector[1] = -7;
+	
 }
