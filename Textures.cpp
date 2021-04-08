@@ -145,12 +145,10 @@ Textures::Textures(Map* map, float viewDistance) {
 
 	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
 	glTexCoordPointer(2, GL_FLOAT, 0, cube_texc);
-	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
 	glNormalPointer(GL_FLOAT, 0, cube_norm);
 }
 
 void Textures::TexturesDisplay(float x, float y, float z) {
-
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);

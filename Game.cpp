@@ -12,8 +12,6 @@ Game::~Game() {
 
 void Game::GameInit() {
 
-
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_CULL_FACE);
@@ -151,9 +149,9 @@ void Game::SaveGame(int id) {
 
 	ofstream plik(name.c_str(), ios::binary);
 	char m;
-	for (int i = 0; i < 600; i++) {
-		for (int j = 0; j < 64; j++) {
-			for (int k = 0;k < 600;k++) {
+	for (int i = 0; i < map->getX(); i++) {
+		for (int j = 0; j < map->getY(); j++) {
+			for (int k = 0;k < map->getZ();k++) {
 				m = map->get(i, j, k);
 				plik.write((const char*)&m, sizeof(char));
 			}
@@ -182,9 +180,9 @@ void Game::LoadGame(int id) {
 	}
 	map = new Map(false);
 	char m;
-	for (int i = 0; i < 600; i++) {
-		for (int j = 0; j < 64; j++) {
-			for (int k = 0;k < 600;k++) {
+	for (int i = 0; i < map->getX(); i++) {
+		for (int j = 0; j < map->getY(); j++) {
+			for (int k = 0;k < map->getZ();k++) {
 				plik.read((char*)&m, sizeof(char));
 				map->simpleSet(m, i, j, k);
 			}
