@@ -168,7 +168,9 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 			for (z1 = z - viewDistance;z1 < z + viewDistance;z1++) {
 				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
 					gluProject(x1 + 0.5, y1, z1 + 0.5, modelview, projection, viewport, &windowX, &windowY, &windowZ);
-					if (windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1) {
+					if ((windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1)) { //jeśli odległość mała
+						glPushMatrix();
+
 						glTranslatef(x1, y1, z1);
 
 						glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
@@ -186,17 +188,20 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 						if (((v >> 5) & 1UL) == 0 && x > x1)
 							glDrawElements(GL_TRIANGLES, sizeof(wallXp), GL_UNSIGNED_BYTE, wallXp);
 
-						glTranslatef(-x1, -y1, -z1);
+						glPopMatrix();
 					}
 				}
 			}
 		}
 	}
 
+	
 	for (y1 = y - 3;y1 < y + 10;y1++) {
 		for (x1 = x - 3;x1 < x + 3; x1++) {
 			for (z1 = z - 3;z1 < z + 3;z1++) {
 				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
+					glPushMatrix();
+
 					glTranslatef(x1, y1, z1);
 
 					glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
@@ -214,11 +219,12 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 					if (((v >> 5) & 1UL) == 0 && x > x1)
 						glDrawElements(GL_TRIANGLES, sizeof(wallXp), GL_UNSIGNED_BYTE, wallXp);
 
-					glTranslatef(-x1, -y1, -z1);
+					glPopMatrix();
 				}
 			}
 		}
 	}
+	
 
 }
 

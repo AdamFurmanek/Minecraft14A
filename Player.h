@@ -40,7 +40,7 @@ public:
 	 *
 	 *	Nadaje parametry latarce i wczytuje wszystkie parametry.
 	 */
-	Player(Map* map, float x = 0.0f, float y = 0.0f, float z = 0.0f, int jump = 0, float fallingSpeed = 0.1f, bool flashlight = false, float viewField = 60.0);
+	Player(Map* map, float x = 0.0f, float y = 0.0f, float z = 0.0f, int jump = 0, float fallingSpeed = 0.1f, bool flashlight = false, float viewField = 80.0);
 	
 	/*! \fn void Player::PressKey(unsigned char key)
 	 *  \brief Sterowanie graczem za pomoc¹ klawiatury (przy naciœniêciu klawisza).

@@ -27,11 +27,11 @@ Player::Player(Map* map, float x, float y, float z, int jump, float fallingSpeed
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse1);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specular1);
 
-	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.7);
+	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.8);
 	// Wygaszanie œwiat³a (liniowo)
-	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.01);
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.005);
 	// Wygaszanie œwiat³a (kwadratowo)
-	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.1);
+	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.001);
 
 	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 10.0);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);

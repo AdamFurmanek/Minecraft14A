@@ -11,12 +11,23 @@ Map::Map(bool generate) {
 }
 
 void Map::Generate() {
-	FastNoiseLite* noise = new FastNoiseLite(time(NULL));
-	(*noise).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	
+	int seed = time(NULL);
+
+	//Na podstawie paru map wysokoœci mo¿na robiæ bardzo ciekawe tereny.
+
+	//mapa wysokoœci.
+	FastNoiseLite* noise = new FastNoiseLite(seed);
+	(*noise).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
+
+	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_Value);
+	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_ValueCubic);
 
 	for (int x = 0; x < getX(); x++) {
 		for (int z = 0; z < getZ(); z++) {
-			int high = (*noise).GetNoise((float)z, (float)x) * 10 + 20;
+			int high = (*noise).GetNoise((float)z, (float)x) * 20 + 20;
 			if(high>0)
 				map[x][high][z] = 4;
 			for (int k = 0;k < 3;k++) {
@@ -32,12 +43,52 @@ void Map::Generate() {
 		}
 	}
 
+	//Granice œwiata.
 	for (int x = 0;x < getX();x++) {
 		for (int y = 0;y < getY() ;y++) {
 			for (int z = 0;z < getZ();z++) {
 				if ((x == borders-1 || x == getX() - borders)&&( z >= borders-1 && z <= getZ() - borders)  || (z == borders-1 || z == getZ() - borders) && (x >= borders && x <= getX() - borders)) {
 					char id = map[x][y][z];
 					map[x][y][z] = (rand() % 10) > 4 ? 1 : id;
+				}
+			}
+		}
+	}
+
+	FastNoiseLite* noise2 = new FastNoiseLite(seed + 1);
+	(*noise2).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+	for (int x = 0 + 3; x < getX() - 3; x += 3) {
+		for (int z = 0 + 3; z < getZ() - 3; z += 3) {
+			int probability = (*noise2).GetNoise((float)z, (float)x) * 15 + 15;
+			if ((rand() % 3200) < (probability * probability)) {
+				for (int y = 0; y < getY(); y++) {
+					if (map[x][y][z] == 0) {
+						map[x][y][z] = 7;
+						int maxY = rand() % 5 + 3;
+						for(int actualY = y; actualY < y+maxY; actualY++)
+							map[x][actualY][z] = 7;
+						for (int actualY = y+maxY; actualY < y+maxY + 4; actualY++) {
+							for (int newX = x - 1; newX < x + 2; newX++) {
+								for (int newZ = z - 1; newZ < z + 2; newZ++) {
+									map[newX][actualY][newZ] = 8;
+								}
+							}
+						}
+
+						for (int actualY = y + maxY + 1; actualY < y + maxY + 3; actualY++) {
+							for (int newX = x - 1; newX < x + 2; newX++) {
+								map[newX][actualY][z + 2] = 8;
+								map[newX][actualY][z - 2] = 8;
+							}
+							for (int newZ = z - 1; newZ < z + 2; newZ++) {
+								map[x + 2][actualY][newZ] = 8;
+								map[x - 2][actualY][newZ] = 8;
+							}
+						}
+
+						break;
+					}
 				}
 			}
 		}
