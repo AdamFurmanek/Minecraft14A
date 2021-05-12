@@ -27,7 +27,7 @@ void Map::Generate() {
 
 	for (int x = 0; x < getX(); x++) {
 		for (int z = 0; z < getZ(); z++) {
-			int high = (*noise).GetNoise((float)z, (float)x) * 20 + 20;
+			int high = (*noise).GetNoise((float)z, (float)x) * 20 + 10;
 			if(high>0)
 				map[x][high][z] = 4;
 			for (int k = 0;k < 3;k++) {
@@ -43,18 +43,7 @@ void Map::Generate() {
 		}
 	}
 
-	//Granice œwiata.
-	for (int x = 0;x < getX();x++) {
-		for (int y = 0;y < getY() ;y++) {
-			for (int z = 0;z < getZ();z++) {
-				if ((x == borders-1 || x == getX() - borders)&&( z >= borders-1 && z <= getZ() - borders)  || (z == borders-1 || z == getZ() - borders) && (x >= borders && x <= getX() - borders)) {
-					char id = map[x][y][z];
-					map[x][y][z] = (rand() % 10) > 4 ? 1 : id;
-				}
-			}
-		}
-	}
-
+	//drzewa
 	FastNoiseLite* noise2 = new FastNoiseLite(seed + 1);
 	(*noise2).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
@@ -62,8 +51,12 @@ void Map::Generate() {
 		for (int z = 0 + 3; z < getZ() - 3; z += 3) {
 			int probability = (*noise2).GetNoise((float)z, (float)x) * 15 + 15;
 			if ((rand() % 3200) < (probability * probability)) {
-				for (int y = 0; y < getY(); y++) {
+				for (int y = 1; y < getY(); y++) {
 					if (map[x][y][z] == 0) {
+
+						if (y <= 2)
+							break;
+
 						map[x][y][z] = 7;
 						int maxY = rand() % 5 + 3;
 						for(int actualY = y; actualY < y+maxY; actualY++)
@@ -94,6 +87,38 @@ void Map::Generate() {
 		}
 	}
 
+	for (int x = 0;x < getX();x++) {
+		for (int z = 0;z < getZ();z++) {
+			for (int x2 = x - 3;x2 < x + 3;x2++) {
+				for (int z2 = z - 3;z2 < z + 3;z2++) {
+					if(x2 > 0 && x2 < getX() && z2 > 0 && z2 < getZ())
+						if (map[x2][1][z2] == 0 && map[x][1][z] == 4)
+							map[x][1][z] = 5;
+				}
+			}
+		}
+	}
+
+	//woda
+	for (int x = 0;x < getX();x++) {
+		for (int z = 0;z < getZ();z++) {
+			if (map[x][1][z] == 0)
+				map[x][1][z] = 100;
+		}
+	}
+
+	//Granice œwiata.
+	for (int x = 0;x < getX();x++) {
+		for (int y = 0;y < getY();y++) {
+			for (int z = 0;z < getZ();z++) {
+				if ((x == borders - 1 || x == getX() - borders) && (z >= borders - 1 && z <= getZ() - borders) || (z == borders - 1 || z == getZ() - borders) && (x >= borders && x <= getX() - borders)) {
+					char id = map[x][y][z];
+					map[x][y][z] = (rand() % 10) > 4 ? 1 : id;
+				}
+			}
+		}
+	}
+
 }
 
 void Map::checkVisibility(int x1, int y1, int z1) {
@@ -102,14 +127,20 @@ void Map::checkVisibility(int x1, int y1, int z1) {
 		code |= 1UL << 0;
 	if (y1 - 1 < 0 || map[x1][y1 - 1][z1] > 0)
 		code |= 1UL << 1;
-	if (z1 + 1 >= getZ() || map[x1][y1][z1 + 1] > 0)
+	if (z1 + 1 >= getZ() || map[x1][y1][z1 + 1] > 0 && map[x1][y1][z1 + 1] != 100)
 		code |= 1UL << 2;
-	if (z1 - 1 < 0 || map[x1][y1][z1 - 1] > 0)
+	if (z1 - 1 < 0 || map[x1][y1][z1 - 1] > 0 && map[x1][y1][z1 - 1] != 100)
 		code |= 1UL << 3;
-	if (x1 - 1 < 0 || map[x1 - 1][y1][z1] > 0)
+	if (x1 - 1 < 0 || map[x1 - 1][y1][z1] > 0 && map[x1 - 1][y1][z1] != 100)
 		code |= 1UL << 4;
-	if (x1 + 1 >= getZ() || map[x1 + 1][y1][z1] > 0)
+	if (x1 + 1 >= getZ() || map[x1 + 1][y1][z1] > 0 && map[x1 + 1][y1][z1] != 100)
 		code |= 1UL << 5;
+
+	//woda
+	if (map[x1][y1][z1] == 100) {
+		code = 0;
+		code |= 1UL << 1;
+	}
 	visibilityMap[x1][y1][z1] = code;
 }
 
@@ -137,36 +168,29 @@ char Map::getV(int x2, int y2, int z2) {
 
 void Map::set(char value, int x1, int y1, int z1) {
 	map[x1][y1][z1] = value;
-	if (value <= 0) {
-		if (y1 + 1 < getY())
-			visibilityMap[x1][y1 + 1][z1] &= ~(1UL << 1);
-		if (y1 - 1 >= 0)
-			visibilityMap[x1][y1 - 1][z1] &= ~(1UL << 0);
-		if (z1 + 1 < getZ())
-			visibilityMap[x1][y1][z1 + 1] &= ~(1UL << 3);
-		if (z1 - 1 >= 0)
-			visibilityMap[x1][y1][z1 - 1] &= ~(1UL << 2);
-		if (x1 - 1 >= 0)
-			visibilityMap[x1 - 1][y1][z1] &= ~(1UL << 5);
-		if (x1 + 1 < getZ())
-			visibilityMap[x1 + 1][y1][z1] &= ~(1UL << 4);
-	}
-	else {
-		if (y1 + 1 < getY())
-			visibilityMap[x1][y1 + 1][z1] |= 1UL << 1;
-		if (y1 - 1 >= 0)
-			visibilityMap[x1][y1 - 1][z1] |= 1UL << 0;
-		if (z1 + 1 < getZ())
-			visibilityMap[x1][y1][z1 + 1] |= 1UL << 3;
-		if (z1 - 1 >= 0)
-			visibilityMap[x1][y1][z1 - 1] |= 1UL << 2;
-		if (x1 - 1 >= 0)
-			visibilityMap[x1 - 1][y1][z1] |= 1UL << 5;
-		if (x1 + 1 < getZ())
-			visibilityMap[x1 + 1][y1][z1] |= 1UL << 4;
-	}
+	if (y1 + 1 < getY())
+		checkVisibility(x1, y1 + 1, z1);
+	if (y1 - 1 >= 0)
+		checkVisibility(x1, y1 - 1, z1);
+	if (z1 + 1 < getZ())
+		checkVisibility(x1, y1, z1 + 1);
+	if (z1 - 1 >= 0)
+		checkVisibility(x1, y1, z1 - 1);
+	if (x1 - 1 >= 0)
+		checkVisibility(x1 + 1, y1, z1);
+	if (x1 + 1 < getZ())
+		checkVisibility(x1 - 1, y1, z1);
+
 }
 
 void Map::simpleSet(char value, int x1, int y1, int z1) {
 	map[x1][y1][z1] = value;
+}
+
+bool Map::getCollision(int x, int y, int z) {
+	int blockID = get(x, y, z);
+	if (blockID > 0 && blockID < 100)
+		return true;
+	else
+		return false;
 }

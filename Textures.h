@@ -5,6 +5,7 @@
 #include "Map.h"
 #include <GL/glut.h>
 #include <math.h>
+#include "FastNoiseLite.h"
 
 /*! \class Textures Textures.h
  *  \brief Klasa odpowiedzialna za tekstury.
@@ -17,6 +18,9 @@ private:
 	static Map* map;
 	GLuint TextureID[14];
 	int viewDistance;
+
+	int seed = time(NULL);
+	FastNoiseLite* waterNoise1 = new FastNoiseLite(seed);
 public:
 
 	/*! \fn Textures::Textures(Map* map, float viewDistance = 30)
@@ -38,7 +42,7 @@ public:
 	 *  Sprawdza dodatkowo czy bloki s¹ widoczne na ekranie i nie renderuje ich jeœli nie s¹.
 	 *  Na koniec renderuje ponownie najbli¿sze otoczenia gracza, by zabezpieczyæ render przed znikaj¹cymi bliskimi blokami.
 	 */
-	void TexturesDisplay(float x, float y, float z);
+	void TexturesDisplay(float x, float y, float z, GLfloat skyColor[3], float timer);
 
 	/*! \fn void Textures::DrawSelectedBlock(int id)
 	 *  \brief Wyœwietla aktualnie trzymany blok.

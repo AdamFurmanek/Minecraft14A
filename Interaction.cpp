@@ -18,7 +18,7 @@ void Interaction::Mouse(int button, int state, int x, int y) {
 	if (state == GLUT_DOWN)
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			if (followedWall != 0 && followedY > 0)
+			if (followedWall != 0 && followedY > 1)
 				map->set(0, followedX, followedY, followedZ);
 			break;
 		case GLUT_RIGHT_BUTTON:

@@ -14,8 +14,10 @@ class Ambient
 {
 private:
 	float Time;
-	GLfloat skyColor[3] = { 0.0f, 0.6f, 1.0f };
+
 public:
+
+	GLfloat skyColor[3] = { 0.0f, 0.6f, 1.0f };
 
 	/*! \fn Ambient::Ambient(float Timer = 0)
 	 *  \brief Konstruktor.
@@ -55,6 +57,7 @@ public:
 	float getTime() {
 		return Time;
 	}
+
 };
 
 #endif

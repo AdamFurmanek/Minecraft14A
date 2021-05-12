@@ -55,7 +55,7 @@ void Game::GameDisplay() {
 
 	ambient->AmbientDisplay(player->getX(), player->getY(), player->getZ(), textures->getViewDistance());
 
-	textures->TexturesDisplay(player->getX(), player->getY(), player->getZ());
+	textures->TexturesDisplay(player->getX(), player->getY(), player->getZ(), ambient->skyColor, timer->getTimer());
 
 	// Rysowanie ramki śledzonego bloku.
 	interaction->DrawCubeBorder();

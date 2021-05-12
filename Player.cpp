@@ -233,7 +233,7 @@ bool Player::Collision(float x, float y, float z) {
 	y1 = (int)(y);
 	z1 = (int)(z + space);
 	z2 = (int)(z - space);
-	if (map->get(x1, y1, z1) == 0 && map->get(x2, y1, z1) == 0 && map->get(x1, y1, z2) == 0 && map->get(x2, y1, z2) == 0
+	if (!(map->getCollision(x1, y1, z1)) && !(map->getCollision(x2, y1, z1)) && !(map->getCollision(x1, y1, z2)) && !(map->getCollision(x2, y1, z2))
 		&& x1 > map->getBorders()-1 && x1<map->getX() - map->getBorders()+1 && z1> map->getBorders()-1 && z1 < map->getZ() - map->getBorders()+1)
 		return false;
 	else

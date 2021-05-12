@@ -1,4 +1,8 @@
 ﻿#include "Textures.h"
+#include "WaterShader.h"
+
+
+WaterShader* waterShader;
 
 const float cube_vert[] = {
 1.001f, 1.001f, -0.001f,
@@ -146,9 +150,14 @@ Textures::Textures(Map* map, float viewDistance) {
 	glVertexPointer(3, GL_FLOAT, 0, cube_vert);
 	glTexCoordPointer(2, GL_FLOAT, 0, cube_texc);
 	glNormalPointer(GL_FLOAT, 0, cube_norm);
+
+	waterShader = new WaterShader();
+
+	(*waterNoise1).SetFrequency(5);
+	(*waterNoise1).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
 }
 
-void Textures::TexturesDisplay(float x, float y, float z) {
+void Textures::TexturesDisplay(float x, float y, float z, GLfloat skyColor[3], float timer) {
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
@@ -168,12 +177,28 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 			for (z1 = z - viewDistance;z1 < z + viewDistance;z1++) {
 				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
 					gluProject(x1 + 0.5, y1, z1 + 0.5, modelview, projection, viewport, &windowX, &windowY, &windowZ);
-					if ((windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1)) { //jeśli odległość mała
+					if ((y1 > y - 3 && y1 < y + 3 && x1 > x - 3 && x1 < x + 3 && z1 > z - 3 && y1 < z + 3) || (windowX<2400 && windowX>-500 && windowY > -700 && windowY < 1200 && windowZ < 1)) { //jeśli odległość mała
+						
 						glPushMatrix();
 
 						glTranslatef(x1, y1, z1);
 
 						glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
+
+						//Shader wody.
+						if (map->get(x1, y1, z1) == 100) {
+							glDisable(GL_TEXTURE_2D);
+							glColor3f(skyColor[0] * 0.8, skyColor[1] * 0.8, skyColor[2] * 0.8);
+
+							float height = timer - (int)timer;
+							
+							height += abs((*waterNoise1).GetNoise((float)z1, (float)x1) * 10);
+							while (height > 1)
+								height -= 1;
+							if (height > 0.5)
+								height = 1 - height;
+							waterShader->Enable(height, 0);
+						}
 
 						if (((v >> 0) & 1UL) == 0 && y + 2.5 > y1)
 							glDrawElements(GL_TRIANGLES, sizeof(wallTop), GL_UNSIGNED_BYTE, wallTop);
@@ -188,44 +213,18 @@ void Textures::TexturesDisplay(float x, float y, float z) {
 						if (((v >> 5) & 1UL) == 0 && x > x1)
 							glDrawElements(GL_TRIANGLES, sizeof(wallXp), GL_UNSIGNED_BYTE, wallXp);
 
+						if (map->get(x1, y1, z1) == 100) {
+							waterShader->Disable();
+							glEnable(GL_TEXTURE_2D);
+						}
+
 						glPopMatrix();
+
 					}
 				}
 			}
 		}
 	}
-
-	
-	for (y1 = y - 3;y1 < y + 10;y1++) {
-		for (x1 = x - 3;x1 < x + 3; x1++) {
-			for (z1 = z - 3;z1 < z + 3;z1++) {
-				if (map->get(x1, y1, z1) > 0 && (v = map->getV(x1, y1, z1)) != 63) {
-					glPushMatrix();
-
-					glTranslatef(x1, y1, z1);
-
-					glBindTexture(GL_TEXTURE_2D, TextureID[map->get(x1, y1, z1)]);
-
-					if (((v >> 0) & 1UL) == 0 && y + 2.5 > y1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallTop), GL_UNSIGNED_BYTE, wallTop);
-					if (((v >> 1) & 1UL) == 0 && y + 2.5 < y1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallBottom), GL_UNSIGNED_BYTE, wallBottom);
-					if (((v >> 2) & 1UL) == 0 && z > z1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallZp), GL_UNSIGNED_BYTE, wallZp);
-					if (((v >> 3) & 1UL) == 0 && z < z1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallZm), GL_UNSIGNED_BYTE, wallZm);
-					if (((v >> 4) & 1UL) == 0 && x < x1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallXm), GL_UNSIGNED_BYTE, wallXm);
-					if (((v >> 5) & 1UL) == 0 && x > x1)
-						glDrawElements(GL_TRIANGLES, sizeof(wallXp), GL_UNSIGNED_BYTE, wallXp);
-
-					glPopMatrix();
-				}
-			}
-		}
-	}
-	
-
 }
 
 

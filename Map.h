@@ -105,6 +105,8 @@ public:
 	 */
 	void simpleSet(char value, int x1, int y1, int z1);
 
+	bool getCollision(int x, int y, int z);
+
 	int getX() {
 		return constX;
 	}
