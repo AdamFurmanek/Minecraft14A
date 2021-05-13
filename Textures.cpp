@@ -153,7 +153,7 @@ Textures::Textures(Map* map, float viewDistance) {
 
 	waterShader = new WaterShader();
 
-	(*waterNoise1).SetFrequency(5);
+	(*waterNoise1).SetFrequency(100);
 	(*waterNoise1).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
 }
 
@@ -193,10 +193,7 @@ void Textures::TexturesDisplay(float x, float y, float z, GLfloat skyColor[3], f
 							float height = timer - (int)timer;
 							
 							height += abs((*waterNoise1).GetNoise((float)z1, (float)x1) * 10);
-							while (height > 1)
-								height -= 1;
-							if (height > 0.5)
-								height = 1 - height;
+
 							waterShader->Enable(height, 0);
 						}
 

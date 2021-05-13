@@ -2,7 +2,7 @@
 
 Map::Map(bool generate) {
 
-	borders = 10;
+	borders = 40;
 
 	if(generate){
 		Generate();
@@ -14,16 +14,8 @@ void Map::Generate() {
 	
 	int seed = time(NULL);
 
-	//Na podstawie paru map wysokoœci mo¿na robiæ bardzo ciekawe tereny.
-
-	//mapa wysokoœci.
 	FastNoiseLite* noise = new FastNoiseLite(seed);
 	(*noise).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
-
-	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_Value);
-	//(*noise).SetNoiseType(FastNoiseLite::NoiseType_ValueCubic);
 
 	for (int x = 0; x < getX(); x++) {
 		for (int z = 0; z < getZ(); z++) {
@@ -39,10 +31,33 @@ void Map::Generate() {
 				high--;
 				map[x][high][z] = 2;
 			}
-			map[x][0][z] = 1;
+			map[x][0][z] = 4;
 		}
 	}
 
+	
+	//Piasek
+	for (int x = 0;x < getX();x++) {
+		for (int z = 0;z < getZ();z++) {
+			for (int x2 = x - 3;x2 < x + 3;x2++) {
+				for (int z2 = z - 3;z2 < z + 3;z2++) {
+					if(x2 > 0 && x2 < getX() && z2 > 0 && z2 < getZ())
+						if (map[x2][1][z2] == 0 && map[x][1][z] == 4)
+							map[x][1][z] = 5;
+				}
+			}
+		}
+	}
+
+	//Woda
+	for (int x = 0;x < getX();x++) {
+		for (int z = 0;z < getZ();z++) {
+			if (map[x][1][z] == 0)
+				map[x][1][z] = 100;
+		}
+	}
+
+	
 	//drzewa
 	FastNoiseLite* noise2 = new FastNoiseLite(seed + 1);
 	(*noise2).SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -59,9 +74,9 @@ void Map::Generate() {
 
 						map[x][y][z] = 7;
 						int maxY = rand() % 5 + 3;
-						for(int actualY = y; actualY < y+maxY; actualY++)
+						for (int actualY = y; actualY < y + maxY; actualY++)
 							map[x][actualY][z] = 7;
-						for (int actualY = y+maxY; actualY < y+maxY + 4; actualY++) {
+						for (int actualY = y + maxY; actualY < y + maxY + 4; actualY++) {
 							for (int newX = x - 1; newX < x + 2; newX++) {
 								for (int newZ = z - 1; newZ < z + 2; newZ++) {
 									map[newX][actualY][newZ] = 8;
@@ -87,26 +102,7 @@ void Map::Generate() {
 		}
 	}
 
-	for (int x = 0;x < getX();x++) {
-		for (int z = 0;z < getZ();z++) {
-			for (int x2 = x - 3;x2 < x + 3;x2++) {
-				for (int z2 = z - 3;z2 < z + 3;z2++) {
-					if(x2 > 0 && x2 < getX() && z2 > 0 && z2 < getZ())
-						if (map[x2][1][z2] == 0 && map[x][1][z] == 4)
-							map[x][1][z] = 5;
-				}
-			}
-		}
-	}
-
-	//woda
-	for (int x = 0;x < getX();x++) {
-		for (int z = 0;z < getZ();z++) {
-			if (map[x][1][z] == 0)
-				map[x][1][z] = 100;
-		}
-	}
-
+	
 	//Granice œwiata.
 	for (int x = 0;x < getX();x++) {
 		for (int y = 0;y < getY();y++) {
@@ -118,7 +114,7 @@ void Map::Generate() {
 			}
 		}
 	}
-
+	
 }
 
 void Map::checkVisibility(int x1, int y1, int z1) {
@@ -136,7 +132,7 @@ void Map::checkVisibility(int x1, int y1, int z1) {
 	if (x1 + 1 >= getZ() || map[x1 + 1][y1][z1] > 0 && map[x1 + 1][y1][z1] != 100)
 		code |= 1UL << 5;
 
-	//woda
+	//Woda.
 	if (map[x1][y1][z1] == 100) {
 		code = 0;
 		code |= 1UL << 1;

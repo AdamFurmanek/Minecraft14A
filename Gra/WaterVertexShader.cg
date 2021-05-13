@@ -1,0 +1,31 @@
+struct Vertex {
+    float4 position : POSITION;
+    float3 color    : COLOR;
+    float2 texCoord : TEXCOORD0;
+};
+
+Vertex main(float4 position : POSITION,
+                           float3 color    : COLOR,
+                           float2 texCoord : TEXCOORD0,
+                           uniform float4x4 ModelViewProj,
+                           float height)
+{
+    Vertex OUT;
+
+    while (height > 1)
+	    height -= 1;
+	if (height > 0.5)
+	    height = 1 - height;
+
+    if(position.y>0){
+        position.y = 0.4;
+        position.y += height/1.5;
+    }
+
+    OUT.position = mul(ModelViewProj, position);
+    OUT.color    = color - 0.5 + position.y/4;
+    OUT.texCoord = texCoord;
+
+    return OUT;	
+}
+

@@ -1,22 +1,28 @@
-﻿  Textures.cpp
+﻿  main.cpp
 C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.h(22,17): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(116,23): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(176,15): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(177,16): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(184,28): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(184,24): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(184,20): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(191,68): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(191,49): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(191,30): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(237,30): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(238,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(238,16): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(242,26): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Textures.cpp(242,17): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Player.h(119,10): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(4,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(5,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(7,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(8,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(10,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(11,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(13,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(14,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(16,50): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(17,52): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(19,49): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(20,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(22,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(23,47): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(25,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(26,51): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(28,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(29,46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(31,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Colors.h(32,48): warning C4305: 'initializing': truncation from 'double' to 'const float'
   Generating code
-  5 of 299 functions ( 1.7%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB and IOBJ mismatch, fall back to full compilation.
+  All 299 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   Engine3D.vcxproj -> C:\Dev\Microsoft Visual Studio\workspace\ProjektGK3D\Release\Engine3D.exe
